@@ -1,6 +1,6 @@
 from Crypto.Cipher import AES
 import logging
-
+# This is most probably no longer needed!
 logging.basicConfig(level=logging.INFO)
 
 
@@ -28,7 +28,6 @@ def decrypt_data(encrypted_data, key):
         cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
 
         plaintext = cipher.decrypt_and_verify(ciphertext, tag)
-        logging.info(f"Plaintext: {plaintext}")
         return plaintext
     except ValueError as e:
         logging.error(f"Decryption failed: {e}")
