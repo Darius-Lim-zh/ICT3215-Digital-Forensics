@@ -1,4 +1,7 @@
 # compiler.py
+# Extract from exe: https://github.com/extremecoders-re/pyinstxtractor
+# Decompiler for pyc: https://pylingual.io
+# Core files for testing: compiler.py, setup.py, test.py
 
 import sys
 import os
@@ -13,21 +16,40 @@ import sys
 
 def compile_with_cython(target_script):
     # Remove extension from filename
-    base_name = os.path.splitext(os.path.basename(target_script))[0] + "_comp"
+    base_name = os.path.splitext(os.path.basename(target_script))[0]
     compiled_name = f"{base_name}_comp"
+    print(compiled_name)
 
     # Define the extension module
-    extensions = [Extension(base_name, [target_script])]
+    extensions = [Extension(compiled_name, [target_script])]
 
     # Compile the extension module
     setup(
-        name=base_name,
+        name=compiled_name,
         ext_modules=cythonize(
             extensions,
             compiler_directives={'language_level': "3"},
         ),
         script_args=['build_ext', '--inplace'],
     )
+
+    # Used to ensure that only the compiled name remains
+    # Find the compiled module with suffixes
+    if sys.platform == "win32":
+        pattern = f"{compiled_name}*.pyd"
+        new_compiled_file = f"{compiled_name}.pyd"
+    else:
+        pattern = f"{compiled_name}*.so"
+        new_compiled_file = f"{compiled_name}.so"
+
+    compiled_files = glob.glob(pattern)
+    if compiled_files:
+        compiled_file = compiled_files[0]
+        os.rename(compiled_file, new_compiled_file)
+        print(f"Renamed {compiled_file} to {new_compiled_file}")
+    else:
+        print("Compiled module not found.")
+        sys.exit(1)
 
 def create_executable(compiled_module_name):
     # Create a temporary Python script that imports and runs the compiled module
@@ -42,21 +64,33 @@ if __name__ == '__main__':
         f.write(wrapper_script)
 
     # Use PyInstaller to create the executable
-    PyInstaller.__main__.run([
-        '--onefile',
-        '--clean',
-        '--name', compiled_module_name,
-        wrapper_script_name,
-    ])
+    try:
+        PyInstaller.__main__.run([
+            '--onefile',
+            '--clean',
+            '--name', compiled_module_name,
+            wrapper_script_name,
+        ])
+    except Exception as e:
+        print(f"Error during PyInstaller execution: {e}")
+        sys.exit(1)
+
+    # Determine the executable name
+    if sys.platform == "win32":
+        executable_name = f"{compiled_module_name}.exe"
+    else:
+        executable_name = compiled_module_name  # No extension on Unix-like systems
 
     # Move the executable to current directory
-    dist_path = os.path.join('dist', compiled_module_name)
+    dist_path = os.path.join('dist', executable_name)
     print(dist_path)
     if os.path.exists(dist_path):
-        shutil.move(dist_path, f'./{compiled_module_name}.exe')
-        print(f"Executable created: ./{compiled_module_name}.exe")
+        shutil.move(dist_path, f'./{executable_name}')
+        print(f"Executable created: ./{executable_name}")
     else:
         print("Executable not found.")
+        print(f"Available files: {os.listdir('dist')}")
+        sys.exit(1)
 
     # Cleanup
     # os.remove(wrapper_script_name)
