@@ -37,7 +37,3 @@ def main():
     print("Reversed string 'hello':", reverse_string("hello"))
     print("Sum of list [1, 2, 3, 4, 5]:", sum_list_elements([1, 2, 3, 4, 5]))
     print("Vowel count in 'This is a test string':", count_vowels("This is a test string"))
-
-if __name__ == "__main__":
-    # Testing the functions
-    main()

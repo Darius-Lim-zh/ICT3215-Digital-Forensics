@@ -8,10 +8,13 @@ from setuptools import setup
 from Cython.Build import cythonize
 from setuptools.extension import Extension
 import PyInstaller.__main__
+import glob
+import sys
 
 def compile_with_cython(target_script):
     # Remove extension from filename
-    base_name = os.path.splitext(os.path.basename(target_script))[0]
+    base_name = os.path.splitext(os.path.basename(target_script))[0] + "_comp"
+    compiled_name = f"{base_name}_comp"
 
     # Define the extension module
     extensions = [Extension(base_name, [target_script])]
@@ -48,6 +51,7 @@ if __name__ == '__main__':
 
     # Move the executable to current directory
     dist_path = os.path.join('dist', compiled_module_name)
+    print(dist_path)
     if os.path.exists(dist_path):
         shutil.move(dist_path, f'./{compiled_module_name}.exe')
         print(f"Executable created: ./{compiled_module_name}.exe")
@@ -55,16 +59,16 @@ if __name__ == '__main__':
         print("Executable not found.")
 
     # Cleanup
-    os.remove(wrapper_script_name)
-    shutil.rmtree('build', ignore_errors=True)
-    shutil.rmtree('dist', ignore_errors=True)
-    shutil.rmtree(f'{compiled_module_name}.egg-info', ignore_errors=True)
-    try:
-        os.remove(f'{compiled_module_name}.c')
-        os.remove(f'{compiled_module_name}.pyd')
-        os.remove(f'{compiled_module_name}.spec')
-    except FileNotFoundError:
-        pass
+    # os.remove(wrapper_script_name)
+    # shutil.rmtree('build', ignore_errors=True)
+    # shutil.rmtree('dist', ignore_errors=True)
+    # shutil.rmtree(f'{compiled_module_name}.egg-info', ignore_errors=True)
+    # try:
+    #     os.remove(f'{compiled_module_name}.c')
+    #     os.remove(f'{compiled_module_name}.pyd')
+    #     os.remove(f'{compiled_module_name}.spec')
+    # except FileNotFoundError:
+    #     pass
 
 def main():
     if len(sys.argv) != 2:
@@ -81,9 +85,11 @@ def main():
 
     # Get the base name of the script without extension
     base_name = os.path.splitext(os.path.basename(target_script))[0]
+    compiled_module_name = f"{base_name}_comp"
 
+    print(compiled_module_name)
     # Create the executable using PyInstaller
-    create_executable(base_name)
+    create_executable(compiled_module_name)
 
 if __name__ == '__main__':
     main()
