@@ -101,18 +101,17 @@ def embed_code(embed_code_filename="mal_code.py", src_code_filename='target_scri
     Function will take in code to embed along with the source file and perform transformation on it depending on the
     customization done to it. It can wrap the main function with the injected code or append the injected code
     embed_code_filename     (Filename of code to embed)
-    imports                 (imports of the code content)
     src_code_filename       (Filename that you want to embed code into)
     loc_to_inject           (main/end the loc of code where you want to put the injected function)
     func_name               (Name of the injected function)
     wrap                    (True/False Whether you want to wrap as an if else condition pre-running main() func)
     new_name                (The new name for the modified code)
-    :param new_name:
     :param embed_code_filename:
     :param src_code_filename:
     :param loc_to_inject:
     :param func_name:
     :param wrap:
+    :param new_name:
     :return:
     """
     try:
@@ -188,22 +187,22 @@ def embed_code(embed_code_filename="mal_code.py", src_code_filename='target_scri
         return 1
 
 
-if __name__ == '__main__':
-    # Define my file names
-    inj_file = "mal_code.py"
-    new_name = "Result/mal_2.py"
-    src_file = "testcode.py"
-
-    # normal wrapped main test
-    embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name)
-
-    new_name = "Result/mal_3.py"
-    # append test
-    embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False)
-
-    inj_file = "../Self_Destruct/self_destruct_script_poc.py"
-    new_name = "Result/mal_4.py"
-    func_name = "call_main"
-    # self dest test
-    embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False,
-                              func_name="call_main")
+# if __name__ == '__main__':
+#     # Define my file names
+#     inj_file = "mal_code.py"
+#     new_name = "Result/mal_2.py"
+#     src_file = "testcode.py"
+#
+#     # normal wrapped main test
+#     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name)
+#
+#     new_name = "Result/mal_3.py"
+#     # append test
+#     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False)
+#
+#     inj_file = "../Self_Destruct/self_destruct_script_poc.py"
+#     new_name = "Result/mal_4.py"
+#     func_name = "call_main"
+#     # self dest test
+#     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False,
+#                               func_name="call_main")
