@@ -24,8 +24,15 @@ def detect_vm_driver():
     return False
 
 
-if detect_vm_driver():
-    print("VM detected! Terminating.")
-    exit(1)
-else:
-    print("Not in vm, carry on")
+def call_detect_vm_driver():
+    """
+    Call the detect vm function
+    :return:
+    """
+    if detect_vm_driver():
+        print("VM detected! Terminating.")
+        # exit(1)
+        return True
+    else:
+        print("Not in vm, carry on")
+        return False

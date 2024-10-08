@@ -14,6 +14,13 @@ def detect_analysis_tools():
     return False
 
 
-if detect_analysis_tools():
-    print("Forensic tool detected! Taking anti-forensic action.")
-    exit(1)
+def call_detect_analysis_tools():
+    """
+    Call the Detect analysis tools function
+    :return:
+    """
+    if detect_analysis_tools():
+        print("Forensic tool detected! Taking anti-forensic action.")
+        exit(1)
+        return True
+    return False
