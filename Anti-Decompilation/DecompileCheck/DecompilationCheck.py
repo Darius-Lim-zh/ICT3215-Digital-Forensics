@@ -13,10 +13,10 @@ def tamper_bytecode(pyc_file):
 
 def main():
     # Compile the Python script to a .pyc file
-    py_compile.compile('your_script.py', cfile='your_script.pyc')
+    py_compile.compile('test.py', cfile='test.pyc')
 
     # Path to the .pyc file you want to tamper with
-    tamper_bytecode('your_script.pyc')
+    tamper_bytecode('test.pyc')
 
 
 if __name__ == '__main__':

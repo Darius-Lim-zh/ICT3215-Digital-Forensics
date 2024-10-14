@@ -1,9 +1,9 @@
+import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
-import os
 
-def encrypt_script(input_file, output_file, key):
+def encrypt_script(input_file, key):
     # Read the script content
     with open(input_file, 'rb') as f:
         script_data = f.read()
@@ -22,16 +22,71 @@ def encrypt_script(input_file, output_file, key):
     # Encrypt the data
     encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
 
-    # Write the encrypted data with the IV prepended to the output file
-    with open(output_file, 'wb') as f:
-        f.write(iv + encrypted_data)
+    # Return both the IV and the encrypted data
+    return iv, encrypted_data
 
+def generate_decryption_script(iv, encrypted_data, key, output_file):
+    # Convert key, IV, and encrypted data to byte literals
+    iv_literal = repr(iv)
+    encrypted_data_literal = repr(encrypted_data)
+    key_literal = repr(key)
+
+    # Template for the decryption script
+    decryption_script = f'''
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+
+def decrypt_script(encrypted_data, iv, key):
+    # Create AES cipher with CBC mode
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+
+    # Decrypt the data
+    decrypted_padded_data = decryptor.update(encrypted_data) + decryptor.finalize()
+
+    # Remove padding
+    unpadder = padding.PKCS7(128).unpadder()
+    decrypted_data = unpadder.update(decrypted_padded_data) + unpadder.finalize()
+
+    # Return decrypted Python code
+    return decrypted_data.decode('utf-8')
+
+def execute_decrypted_script(decrypted_code):
+    # Dynamically execute the decrypted Python code
+    exec(decrypted_code)
+
+# Example: Replace this with your actual encryption key (must be the same as used for encryption)
+key = {key_literal}
+
+# Embedded encrypted data and IV
+iv = {iv_literal}  # 16 bytes IV (Initialization Vector)
+encrypted_data = {encrypted_data_literal}  # This is the encrypted code
+
+# Decrypt and execute the code
+decrypted_code = decrypt_script(encrypted_data, iv, key)
+execute_decrypted_script(decrypted_code)
+'''
+
+    # Write the decryption script with embedded encrypted code to the output file
+    with open(output_file, 'w') as f:
+        f.write(decryption_script)
 
 def main():
-    # Usage: provide 32-byte key (AES-256)
-    key = os.urandom(32)
-    encrypt_script('input_script.py', 'encrypted_script.enc', key)
+    # Input Python file to be encrypted
+    input_file = 'test.py'  # Replace with your actual script path
+    output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
 
+    # Generate a 32-byte key (AES-256) or provide your own key
+    key = os.urandom(32)
+
+    # Encrypt the input script
+    iv, encrypted_data = encrypt_script(input_file, key)
+
+    # Generate the decryption script with embedded encrypted data
+    generate_decryption_script(iv, encrypted_data, key, output_file)
+
+    print(f"Decryption script generated and saved to {output_file}")
 
 if __name__ == '__main__':
     main()
