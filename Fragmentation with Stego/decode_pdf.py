@@ -1,5 +1,7 @@
 from PIL import Image
 import numpy as np
+import fitz  # PyMuPDF
+import io
 
 
 def import_image(filename):
@@ -107,6 +109,69 @@ def decode(stego_img, sec_ext, name):
     # print(f'Decoding completed, "{name}.{sec_ext}" should be in your directory')
 
 
+def extract_images_from_pdf(pdf_path):
+    """
+    Extracts all images from a PDF file and saves them as temporary files in memory.
+    
+    Parameters:
+    - pdf_path (str): Path to the PDF file
+    
+    Output:
+    - List of PIL Image objects extracted from the PDF
+    """
+    images = []
+    # Open the PDF file
+    pdf_document = fitz.open(pdf_path)
+    
+    # Iterate through each page in the PDF
+    for page_num in range(len(pdf_document)):
+        page = pdf_document.load_page(page_num)
+        # Get the images on the page
+        images_list = page.get_images(full=True)
+        
+        # Extract each image
+        for img_index, img in enumerate(images_list):
+            xref = img[0]
+            base_image = pdf_document.extract_image(xref)
+            image_bytes = base_image["image"]
+            image_ext = base_image["ext"]
+            
+            # Convert the extracted image bytes to a PIL Image object
+            image = Image.open(io.BytesIO(image_bytes))
+            images.append(image)
+    
+    pdf_document.close()
+    return images
+
+
+def decode_images_from_pdf(pdf_path, sec_ext):
+    """
+    Retrieves all images from a PDF file, decodes any hidden information in the images,
+    and writes the decoded content to a file.
+    
+    Parameters:
+    - pdf_path (str): Path to the PDF file
+    - sec_ext (str): The extension of the secret file to decode
+    """
+    # Extract all images from the PDF
+    images = extract_images_from_pdf(pdf_path)
+    
+    # Iterate through each image and run the decoding function
+    for idx, img in enumerate(images):
+        img_copy = np.array(img).flatten()  # Flatten the image to a 1D array
+        secret_size = decode_capacity(img_copy)
+        print(f'Decoding image {idx+1}/{len(images)}, secret size: {secret_size}')
+        
+        # Extract the secret from the image and save it with a unique filename
+        decode_secret(img_copy, sec_ext, secret_size)
+        print(f'Decoded content from image {idx+1} saved as "secret_{idx+1}.{sec_ext}"')
+
+
+
+# if __name__ == "__main__":
+#     # use example
+#     decode('out.png', 'py', "test_out")
+
 if __name__ == "__main__":
-    # use example
-    decode('out.png', 'py', "test_out")
+    # Example usage:
+    decode_images_from_pdf('test_out.pdf', 'py')

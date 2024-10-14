@@ -1,8 +1,10 @@
 import zlib
 import random
+import argparse
+import sys
 import string
 import builtins
-from binascii import hexlify, unhexlify
+from binascii import hexlify
 import ast
 import textwrap
 from qiskit import QuantumCircuit
@@ -19,8 +21,8 @@ class Obfuscator:
         self.renamed_imports = {}
         self.fake_code_lines = []
         self.obfuscated_strings = {}
-        self.imported_modules = set()  # Initialize imported_modules
-        self.use_qrng = use_qrng  # Flag to determine if QRNG should be used
+        self.imported_modules = set()
+        self.use_qrng = use_qrng
 
         if clean:
             self.clean_code()
@@ -476,7 +478,7 @@ class Obfuscator:
         property_name = "_property"  # Keeping property name as a standard name
 
         # Generate random code blocks
-        sourcery = self._rand_code_block()
+        creator = self._rand_code_block()
         rands = [self._rand_code_block() for _ in range(3)]
         vars_code = '\n'.join([f"{var} = {self._rand_int()}" for var in self._rand_var_names(5)])
         indented_vars_code = self._indent_code_block(vars_code, 8)  # Indent by 8 spaces for try block
@@ -490,12 +492,12 @@ class {class_name}:
         self.{method_name}(run753={self._rand_int()})
 
     def {method_name}(self, run753 = {self._rand_type()}):
-{self._indent_code_block(sourcery, 8)}
+{self._indent_code_block(creator, 8)}
         self.Service887 {self._rand_op()}= {self._rand_int()} {self._rand_op()} run753
 {self._indent_code_block(rands[0], 8)}
 
     def {another_method_name}(self, Calculator874 = {self._rand_int()}):
-{self._indent_code_block(sourcery, 8)}
+{self._indent_code_block(creator, 8)}
         Calculator874 {self._rand_op()}= {self._rand_int()} {self._rand_op()} {self._rand_int()}
         self.temp980 != {self._rand_type()}
 {self._indent_code_block(rands[1], 8)}
@@ -504,7 +506,7 @@ class {class_name}:
         return Processor777()[item612]
 
     def value263(self, Processor131 = {self._rand_int()} {self._rand_op()} {self._rand_int()}, create478 = {self._rand_type()}, Manager878 = Processor777):
-{self._indent_code_block(sourcery, 8)}
+{self._indent_code_block(creator, 8)}
         Manager878()[Processor131] = create478
         handle691 = {self._rand_int()} {self._rand_op()} {self._rand_int()}
         if {self._rand_bool()}:
@@ -548,25 +550,58 @@ if __name__ == '__main__':
 
 
 def main():
-    # Step 1: Read the input script
-    with open('test.py', 'r') as f:
-        script_content = f.read()
-
-    # Step 2: Obfuscate the script with the updated Obfuscator
-    obfuscator = Obfuscator(
-        content=script_content,
-        clean=True,
-        obfuscate_vars=True,
-        obfuscate_strings=True,
-        rename_imports=True,
-        randomize_lines=True,
-        add_noise=True,
-        use_qrng=True  # Enable QRNG
+    # Step 1: Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Obfuscate a Python script.")
+    parser.add_argument(
+        'input_script',
+        type=str,
+        help='Path to the input Python script to be obfuscated.'
+    )
+    parser.add_argument(
+        '-o', '--output',
+        type=str,
+        default='final_obfuscated_script.py',
+        help='Path for the output obfuscated script (default: final_obfuscated_script.py).'
     )
 
-    # Step 3: Create the final script with obfuscated content embedded
-    output_file = 'final_obfuscated_script.py'
-    obfuscator.create_obfuscated_script(output_file)
+    args = parser.parse_args()
+
+    input_file = args.input_script
+    output_file = args.output
+
+    # Step 2: Read the input script
+    try:
+        with open(input_file, 'r') as f:
+            script_content = f.read()
+    except FileNotFoundError:
+        print(f"Error: The file '{input_file}' does not exist.", file=sys.stderr)
+        sys.exit(1)
+    except IOError as e:
+        print(f"Error reading '{input_file}': {e}", file=sys.stderr)
+        sys.exit(1)
+
+    # Step 3: Obfuscate the script with the updated Obfuscator
+    try:
+        obfuscator = Obfuscator(
+            content=script_content,
+            clean=True,
+            obfuscate_vars=True,
+            obfuscate_strings=True,
+            rename_imports=True,
+            randomize_lines=True,
+            add_noise=True,
+            use_qrng=True  # Enable QRNG
+        )
+    except Exception as e:
+        print(f"Error initializing Obfuscator: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    # Step 4: Create the final script with obfuscated content embedded
+    try:
+        obfuscator.create_obfuscated_script(output_file)
+    except Exception as e:
+        print(f"Error creating obfuscated script '{output_file}': {e}", file=sys.stderr)
+        sys.exit(1)
 
     print(f"Obfuscated script saved as: {output_file}")
 
