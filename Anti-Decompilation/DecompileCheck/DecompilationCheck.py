@@ -110,6 +110,7 @@ def compile_and_tamper(source_script, pyc_file, xor_value):
     generate_dynamic_loader(pyc_file, xor_value)
 
 
+# For use in UI
 def decompile_check(source_script, pyc_file, xor_value=0xFF):
     compile_and_tamper(source_script, pyc_file, xor_value)
 
@@ -129,7 +130,7 @@ def main():
 
     print("Starting compilation and tampering process...")
 
-    compile_and_tamper(source_script, pyc_file)
+    compile_and_tamper(source_script, pyc_file, 0xff)
 
     print("Process completed successfully.")
 

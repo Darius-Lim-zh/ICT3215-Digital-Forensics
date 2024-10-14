@@ -81,6 +81,7 @@ execute_decrypted_script(decrypted_code)
         f.write(decryption_script)
 
 
+# To be used in UI
 def runtime_decrypt(input_file, output_file):
     key = os.urandom(32)
 
