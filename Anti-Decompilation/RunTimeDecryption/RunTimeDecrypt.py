@@ -80,12 +80,8 @@ execute_decrypted_script(decrypted_code)
     with open(output_file, 'w') as f:
         f.write(decryption_script)
 
-def main():
-    # Input Python file to be encrypted
-    input_file = 'test.py'  # Replace with your actual script path
-    output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
 
-    # Generate a 32-byte key (AES-256) or provide your own key
+def runtime_decrypt(input_file, output_file):
     key = os.urandom(32)
 
     # Encrypt the input script
@@ -95,6 +91,25 @@ def main():
     generate_decryption_script(iv, encrypted_data, key, output_file)
 
     print(f"Decryption script generated and saved to {output_file}")
+
+
+def main():
+    # Input Python file to be encrypted
+    input_file = 'test.py'  # Replace with your actual script path
+    output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
+
+    runtime_decrypt(input_file, output_file)
+
+    # # Generate a 32-byte key (AES-256) or provide your own key
+    # key = os.urandom(32)
+    #
+    # # Encrypt the input script
+    # iv, encrypted_data = encrypt_script(input_file, key)
+    #
+    # # Generate the decryption script with embedded encrypted data
+    # generate_decryption_script(iv, encrypted_data, key, output_file)
+    #
+    # print(f"Decryption script generated and saved to {output_file}")
 
 if __name__ == '__main__':
     main()
