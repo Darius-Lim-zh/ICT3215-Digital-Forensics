@@ -53,8 +53,16 @@ def decrypt_script(encrypted_data, iv, key):
     return decrypted_data.decode('utf-8')
 
 def execute_decrypted_script(decrypted_code):
-    # Dynamically execute the decrypted Python code
-    exec(decrypted_code)
+    # Create a new dictionary for the execution context
+    exec_globals = {{}}
+    
+    # Dynamically execute the decrypted Python code in the new context
+    exec(decrypted_code, exec_globals)
+
+    # Now you can call the functions from the executed code
+    # For example, if 'main' is defined in the decrypted code, it can be called as follows:
+    if 'main' in exec_globals:
+        exec_globals['main']()
 
 # Example: Replace this with your actual encryption key (must be the same as used for encryption)
 key = {key_literal}
