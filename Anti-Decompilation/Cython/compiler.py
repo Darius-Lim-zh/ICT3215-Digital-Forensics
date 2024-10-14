@@ -92,7 +92,7 @@ if __name__ == '__main__':
         print(f"Available files: {os.listdir('dist')}")
         sys.exit(1)
 
-    # Cleanup
+    # Cleanup (Would have to add back once done
     # os.remove(wrapper_script_name)
     # shutil.rmtree('build', ignore_errors=True)
     # shutil.rmtree('dist', ignore_errors=True)
