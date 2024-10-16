@@ -191,37 +191,43 @@ class Obfuscator:
         self.cleaned_content = ast.unparse(tree)
 
     def randomize_code_safely(self):
-        """Shuffle non-top-level code lines without breaking critical control structures"""
-        lines = self.cleaned_content.splitlines()
-        top_level_lines = []
-        non_top_level_lines = []
-        inside_function = False
-        inside_while_loop = False  # Track when inside while True block
+        """Shuffle independent, non-control structure code lines within functions without breaking the code."""
 
-        for line in lines:
-            stripped_line = line.strip()
-            # Keep top-level constructs intact
-            if stripped_line.startswith("import") or stripped_line.startswith("def") or stripped_line.startswith(
-                    "if __name__"):
-                top_level_lines.append(line)
-                inside_function = stripped_line.startswith("def")
-                inside_while_loop = False  # Reset while-loop tracking when new top-level line
-            elif inside_function and stripped_line.startswith("while True:"):
-                # Keep "while True:" intact and avoid shuffling its contents
-                top_level_lines.append(line)
-                inside_while_loop = True  # Track that we are inside a while loop
-            elif inside_while_loop and not stripped_line.startswith("while"):
-                # Ensure the content inside the while loop is preserved correctly with proper indentation
-                top_level_lines.append(line)
-            elif inside_function and stripped_line and not stripped_line.startswith("while"):
-                # Randomize only non-control structure lines inside functions
-                non_top_level_lines.append(line)
-            else:
-                top_level_lines.append(line)
+        class CodeRandomizer(ast.NodeTransformer):
+            def __init__(self, obfuscator):
+                self.obfuscator = obfuscator
 
-        # Shuffle non-critical lines (those inside function but not control structures)
-        random.shuffle(non_top_level_lines)
-        self.cleaned_content = "\n".join(top_level_lines + non_top_level_lines)
+            def visit_FunctionDef(self, node):
+                # Separate shufflable and non-shufflable statements
+                shufflable = []
+                non_shufflable = []
+                for stmt in node.body:
+                    if isinstance(stmt, (ast.Assign, ast.AugAssign, ast.Expr, ast.Pass, ast.Return)):
+                        shufflable.append(stmt)
+                    else:
+                        non_shufflable.append(stmt)
+
+                # Shuffle the shufflable statements
+                random.shuffle(shufflable)
+
+                # Reconstruct the function body
+                node.body = shufflable + non_shufflable
+
+                # Continue traversing
+                self.generic_visit(node)
+                return node
+
+            def visit_ClassDef(self, node):
+                # Process methods inside the class
+                for idx, item in enumerate(node.body):
+                    if isinstance(item, ast.FunctionDef):
+                        node.body[idx] = self.visit_FunctionDef(item)
+                return node
+
+        tree = ast.parse(self.cleaned_content)
+        randomizer = CodeRandomizer(self)
+        tree = randomizer.visit(tree)
+        self.cleaned_content = ast.unparse(tree)
 
     def add_noise_to_code(self):
         """Maintain the structure of the code without inserting fake lines of code."""
@@ -588,7 +594,7 @@ def main():
             obfuscate_vars=True,
             obfuscate_strings=True,
             rename_imports=True,
-            randomize_lines=True,
+            randomize_lines=True,  # Enable randomization
             add_noise=True,
             use_qrng=True  # Enable QRNG
         )
