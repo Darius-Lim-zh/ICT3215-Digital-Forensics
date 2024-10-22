@@ -58,29 +58,6 @@ class CodeEmbedderApp:
         self.code_display_box = tk.Text(root, height=10, width=80, wrap=tk.WORD, background="#f0f0f0")
         self.code_display_box.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
 
-        # # Middle Frame for function selection, file name, and options
-        # self.middle_frame = ttk.Frame(root, padding="10")
-        # self.middle_frame.grid(row=2, column=0, columnspan=2, sticky="nsew")
-        #
-        # # Function selection dropdown
-        # ttk.Label(self.middle_frame, text="Select Function to Inject:").grid(row=0, column=0, sticky="w")
-        # self.function_dropdown = ttk.OptionMenu(self.middle_frame, self.selected_function, "")
-        # self.function_dropdown.grid(row=0, column=1)
-        #
-        # # New File Name entry
-        # ttk.Label(self.middle_frame, text="New File Name:").grid(row=1, column=0, sticky="w")
-        # self.file_name_entry = ttk.Entry(self.middle_frame, textvariable=self.new_file_name, width=30)
-        # self.file_name_entry.grid(row=1, column=1)
-        #
-        # # Location to Inject option
-        # ttk.Label(self.middle_frame, text="Location to Inject:").grid(row=2, column=0, sticky="w")
-        # ttk.Radiobutton(self.middle_frame, text="Main", variable=self.loc_to_inject, value="main").grid(row=2, column=1)
-        # ttk.Radiobutton(self.middle_frame, text="End", variable=self.loc_to_inject, value="end").grid(row=2, column=2)
-        #
-        # # Toggle for wrapping main
-        # ttk.Label(self.middle_frame, text="Wrap Main:").grid(row=3, column=0, sticky="w")
-        # ttk.Radiobutton(self.middle_frame, text="Yes", variable=self.wrap, value=True).grid(row=3, column=1)
-        # ttk.Radiobutton(self.middle_frame, text="No", variable=self.wrap, value=False).grid(row=3, column=2)
         # Middle Frame for function selection, file name, and options
         self.middle_frame = ttk.Frame(root, padding="10")
         self.middle_frame.grid(row=2, column=0, columnspan=2, sticky="nsew")
