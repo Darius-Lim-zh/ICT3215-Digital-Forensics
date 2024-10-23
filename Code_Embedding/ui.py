@@ -1,7 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, StringVar, BooleanVar, ttk
-import ast
-import astor
 import os
 import code_embedder as ce
 

