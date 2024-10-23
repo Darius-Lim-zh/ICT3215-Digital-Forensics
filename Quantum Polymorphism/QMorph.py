@@ -552,10 +552,7 @@ if __name__ == '__main__':
         with open(output_filepath, "w") as f:
             f.write(front_script)
 
-    # Usage Example:
-
-
-def main():
+def QMorph():
     # Step 1: Parse command-line arguments
     parser = argparse.ArgumentParser(description="Obfuscate a Python script.")
     parser.add_argument(
@@ -613,4 +610,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    QMorph()
