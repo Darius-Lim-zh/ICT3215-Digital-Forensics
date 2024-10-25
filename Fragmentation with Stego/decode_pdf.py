@@ -4,6 +4,12 @@ import fitz  # PyMuPDF
 import io
 
 
+INPUT_ENCODE_DIR = ".\\encode_in"
+OUTPUT_ENCODE_DIR = ".\\encode_out"
+INPUT_MEDIA_DIR = ".\\media_in"
+OUTPUT_MEDIA_DIR = ".\\media_out"
+
+
 def import_image(filename):
     '''
     loads an image and returns a numpy array of the image
@@ -39,7 +45,7 @@ def bits_representation(integer, n_bits=8):
     return ''.join(['{0:0',str(n_bits),'b}']).format(integer)
 
 
-def decode_secret(flat_medium, sec_ext, length):        # KNOWN BUG: will leave out the last 3 chars, idk why
+def decode_secret(flat_medium, length, run_code):        # KNOWN BUG: will leave out the last 3 chars, idk why
     '''
     Takes the image, length of hidden secret, and the extension of the output file,
     then extracts secret file bits from the image, executes the decoded Python code,
@@ -47,49 +53,49 @@ def decode_secret(flat_medium, sec_ext, length):        # KNOWN BUG: will leave 
     
     Parameters:
     - flat_medium (ndarray): A 1D vector of the image (flattened)
-    - sec_ext (str): The file extension of the secret file. Example: 'txt'
     - length (int): The length of the secret file extracted using decode_capacity
     '''
     # Initialize a string to accumulate the decoded characters
     decoded_code = ""
     
-    # Open the output file in write mode with UTF-8 encoding
-    with open(f'secret.{sec_ext}', 'w', encoding="utf-8") as file:
-        # Extract 1 byte at a time (2 bits from each of the 4 pixels)
-        for pix_idx in range(12, len(flat_medium), 4):
-            # Extract the last 2 bits from each of the 4 consecutive pixels
-            byte_bits = ''.join([bits_representation(pixel)[-2:] for pixel in flat_medium[pix_idx:pix_idx+4]])
-            
-            # Convert the 8 bits to a character
-            try:
-                byte = int(byte_bits, 2)
-                char = chr(byte)
-            except ValueError as ve:
-                print(f"Error converting bits to character at index {pix_idx}: {ve}")
-                continue  # Skip invalid bytes
-            
-            # Accumulate the character to the decoded_code string
-            decoded_code += char
-            
-            # Write the character to the output file
-            file.write(char)
-            
-            # Check if we've reached the specified length
-            if (pix_idx + 4) >= length:
-                break
+    # Extract 1 byte at a time (2 bits from each of the 4 pixels)
+    for pix_idx in range(12, len(flat_medium), 4):
+        # Extract the last 2 bits from each of the 4 consecutive pixels
+        byte_bits = ''.join([bits_representation(pixel)[-2:] for pixel in flat_medium[pix_idx:pix_idx+4]])
+        
+        # Convert the 8 bits to a character
+        try:
+            byte = int(byte_bits, 2)
+            char = chr(byte)
+        except ValueError as ve:
+            print(f"Error converting bits to character at index {pix_idx}: {ve}")
+            continue  # Skip invalid bytes
+        
+        # Accumulate the character to the decoded_code string
+        decoded_code += char
+        
+        # Check if we've reached the specified length
+        if (pix_idx + 4) >= length:
+            break
     
     # Execute the decoded Python code
     try:
-        print("Executing the decoded Python code...")
+        
         print(decoded_code)
-        exec(decoded_code, {'__name__': '__main__'})
-        print("Execution completed successfully.")
+
+        if run_code:
+            print("Executing the decoded Python code...")
+            exec(decoded_code, {'__name__': '__main__'})
+            print("Execution completed successfully.")
+        return decoded_code
+        
     except Exception as e:
         print(f"An error occurred while executing the decoded code: {e}")
+        return ""
 
 
 
-def decode(stego_img, sec_ext, name):
+def decode(stego_img, sec_ext, run_code):
     '''
     this is the driver function to decode a secret file from the stego image
     param stego_img(str): name of the stego image to extract secret from
@@ -104,7 +110,7 @@ def decode(stego_img, sec_ext, name):
     print(f'secret size: {secret_size}')
 
     # extract secret file from stego image
-    decode_secret(img, sec_ext, secret_size)
+    decode_secret(img, secret_size, run_code)
 
     # print(f'Decoding completed, "{name}.{sec_ext}" should be in your directory')
 
@@ -144,34 +150,36 @@ def extract_images_from_pdf(pdf_path):
     return images
 
 
-def decode_images_from_pdf(pdf_path, sec_ext):
+def decode_images_from_pdf(pdf_path, output_path):
     """
     Retrieves all images from a PDF file, decodes any hidden information in the images,
     and writes the decoded content to a file.
     
     Parameters:
     - pdf_path (str): Path to the PDF file
-    - sec_ext (str): The extension of the secret file to decode
+    - output_path (str): The extension of the secret file to decode
     """
     # Extract all images from the PDF
     images = extract_images_from_pdf(pdf_path)
     
-    # Iterate through each image and run the decoding function
+    # Iterate through each image and run the decoding function\
+    formed_script = ""
     for idx, img in enumerate(images):
         img_copy = np.array(img).flatten()  # Flatten the image to a 1D array
         secret_size = decode_capacity(img_copy)
         print(f'Decoding image {idx+1}/{len(images)}, secret size: {secret_size}')
         
         # Extract the secret from the image and save it with a unique filename
-        decode_secret(img_copy, sec_ext, secret_size)
-        print(f'Decoded content from image {idx+1} saved as "secret_{idx+1}.{sec_ext}"')
+        formed_script += decode_secret(img_copy, secret_size, False)
+        with open(output_path, 'w', encoding="utf-8") as file:
+            file.write(formed_script)
+            print(f'Decoded content saved at "{output_path}"')
 
 
-
-# if __name__ == "__main__":
-#     # use example
-#     decode('out.png', 'py', "test_out")
 
 if __name__ == "__main__":
-    # Example usage:
-    decode_images_from_pdf('test_out.pdf', 'py')
+    # use example
+    # decode(OUTPUT_MEDIA_DIR + "\\" + 'original.jpg', 'py', False)
+    decode_images_from_pdf(OUTPUT_MEDIA_DIR + "\\" +"test_out.pdf", OUTPUT_ENCODE_DIR + "\\" + "secret.py")
+
+
