@@ -7,6 +7,7 @@ import builtins
 from binascii import hexlify
 import ast
 import textwrap
+import os  # Added for directory and file handling
 from qiskit import QuantumCircuit
 from qiskit.execute_function import execute
 from qiskit_aer import AerSimulator
@@ -552,6 +553,7 @@ if __name__ == '__main__':
         with open(output_filepath, "w") as f:
             f.write(front_script)
 
+
 def QMorph():
     # Step 1: Parse command-line arguments
     parser = argparse.ArgumentParser(description="Obfuscate a Python script.")
@@ -563,16 +565,45 @@ def QMorph():
     parser.add_argument(
         '-o', '--output',
         type=str,
-        default='final_obfuscated_script.py',
-        help='Path for the output obfuscated script (default: final_obfuscated_script.py).'
+        default=None,  # Changed default to None to handle naming internally
+        help='Name for the output obfuscated script (default: QmorphObf<number>.py in Output directory).'
     )
 
     args = parser.parse_args()
 
     input_file = args.input_script
-    output_file = args.output
 
-    # Step 2: Read the input script
+    # Get the current directory where the script is located
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Move one level up to the parent directory (ICT3215-Digital-Forensics)
+    parent_dir = os.path.dirname(current_dir)
+
+    # Define the output directory in the parent directory
+    output_dir = os.path.join(parent_dir, "Qmorph Output")
+
+    # Create the directory if it doesn't already exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Step 3: Determine the output filename
+    if args.output:
+        # If user provides an output filename, use it within the Output directory
+        output_file = os.path.join(output_dir, args.output)
+        # Ensure the file has a .py extension
+        if not output_file.endswith('.py'):
+            output_file += '.py'
+    else:
+        # Generate a unique filename with a counter
+        base_name = "QmorphObf"
+        extension = ".py"
+        counter = 1
+        while True:
+            output_file = os.path.join(output_dir, f"{base_name}{counter}{extension}")
+            if not os.path.exists(output_file):
+                break
+            counter += 1
+
+    # Step 4: Read the input script
     try:
         with open(input_file, 'r') as f:
             script_content = f.read()
@@ -583,7 +614,7 @@ def QMorph():
         print(f"Error reading '{input_file}': {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Step 3: Obfuscate the script with the updated Obfuscator
+    # Step 5: Obfuscate the script with the updated Obfuscator
     try:
         obfuscator = Obfuscator(
             content=script_content,
@@ -599,7 +630,7 @@ def QMorph():
         print(f"Error initializing Obfuscator: {e}", file=sys.stderr)
         sys.exit(1)
 
-    # Step 4: Create the final script with obfuscated content embedded
+    # Step 6: Create the final script with obfuscated content embedded
     try:
         obfuscator.create_obfuscated_script(output_file)
     except Exception as e:
