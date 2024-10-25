@@ -3,6 +3,14 @@
 
 from PIL import Image
 import numpy as np
+import ast
+import astor
+import os
+import random
+import importlib
+# from fragment import CodeFragmenter
+import glob
+
 
 
 # for PDF interactions
@@ -11,6 +19,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 
+INPUT_ENCODE_DIR = ".\\encode_in"
+OUTPUT_ENCODE_DIR = ".\\encode_out"
+INPUT_MEDIA_DIR = ".\\media_in"
+OUTPUT_MEDIA_DIR = ".\\media_out"
 
 
 def read_secret(filename):
@@ -152,97 +164,123 @@ def encode_secret(img_copy, secret):
         img_copy[index+12] += int(two_bits,2)
 
 
-
-def encode(img_file, output_img_name, secret_file, output_pdf_name):
+def encode(images, output_img_names, secret_file, output_pdf_name):
     '''
-    This is the driver function to encode a secret file into an image and then embed that image into a PDF file.
+    Encodes a secret file into multiple images using RGB steganography and embeds those images into a PDF.
 
     Parameters:
-    - img_file (str): Name of the image file to be used as a medium to hide the secret.
-    - output_img_name (str): Name of the output image file with the secret encoded.
-    - secret_file (str): Name of the secret file to be hidden within the image.
-    - output_pdf_name (str): Name of the output PDF file that will contain the encoded image.
+    - images (List[str]): List of image file paths to use as the medium for hiding parts of the secret.
+    - output_img_names (List[str]): List of output image file paths to save the encoded images.
+    - secret_file (str): Path to the secret file to be hidden within the images.
+    - output_pdf_name (str): Path of the output PDF file that will contain the encoded images.
 
     Output:
-    - A stego image saved as `output_img_name`.
-    - A PDF file saved as `output_pdf_name` containing the stego image.
-
-    Note:
-    - All file names must include their extensions (e.g., 'file.jpg', 'output.pdf').
-    '''
-    # Read the secret file
-    secret = read_secret(secret_file)
-
-    # Read the image
-    img = import_image(img_file)
+    - A list of stego images saved as `output_img_names`.
+    - A PDF file saved as `output_pdf_name` containing the encoded images.
     
-    # Find the capacity of the image and the size of the secret
-    medium_size, secret_size = find_capacity(img, secret)
-
-    # Check if the secret file is too large for the image
-    if secret_size >= medium_size:
-        print('Secret file is too large for this image. Please use a larger image.')
+    Note:
+    - Each image should have a corresponding output image file name in `output_img_names`.
+    '''
+    # Ensure lists have matching lengths
+    if len(images) != len(output_img_names):
+        print("Error: The number of images and output image names must be equal.")
         return None
-    else:
-        if input("Proceed with encoding? (y/n): ").lower() != 'y':
+
+    # Read and prepare the secret data
+    secret = read_secret(secret_file)
+    secret += "ddd"  # Bugfix for last characters truncation
+    parts = [secret[i::len(images)] + "ddd" for i in range(len(images))]  # Split into equal parts
+
+    for idx, (img_file, output_img_name) in enumerate(zip(images, output_img_names)):
+        # Read the image
+        img = import_image(img_file)
+
+        # Calculate the capacity and check against part size
+        medium_size, part_size = find_capacity(img, parts[idx])
+
+        if part_size >= medium_size:
+            print(f'Secret part {idx+1} is too large for the image: {img_file}. Use larger images.')
             return None
 
-    # Save dimensions of image then flatten it
-    img_dim = img.shape
-    img = img.flatten()
+        # Save dimensions of the image and flatten
+        img_dim = img.shape
+        img = img.flatten()
 
-    # Encode the length of the secret into the image
-    encode_capacity(img, secret_size)
+        # Encode the part length and the part itself into the image
+        encode_capacity(img, part_size)
+        encode_secret(img, parts[idx])
 
-    # Encode the secret file into the image
-    encode_secret(img, secret)
+        # Reshape and save the stego image
+        img = img.reshape(img_dim)
+        stego_image = Image.fromarray(img)
+        stego_image.save(output_img_name)
+        print(f'Done! Stego image "{output_img_name}" for part {idx+1} has been saved.')
 
-    # Reshape the image back to its original dimensions
-    img = img.reshape(img_dim)
+    # Embed all encoded images into a PDF
+    images_for_pdf = [Image.open(img_path) for img_path in output_img_names]
+    images_for_pdf[0].save(output_pdf_name, save_all=True, append_images=images_for_pdf[1:])
+    print(f'Done! PDF file "{output_pdf_name}" containing encoded images has been saved.')
+
+
+def get_filename_list(relative_path, pattern="*"):
+    """
+    Lists all filenames in the specified relative directory matching the given pattern using the glob module.
     
-    # Save the stego image
-    im = Image.fromarray(img)
-    im.save(output_img_name)
-    print(f'Done! Stego image "{output_img_name}" has been saved.')
+    Args:
+        relative_path (str): The relative path to the directory.
+        pattern (str): The glob pattern to match filenames (default is "*" for all files).
+    
+    Returns:
+        List[str]: A list of filenames matching the pattern in the directory.
+    """
+    try:
+        # Construct the search pattern
+        search_pattern = os.path.join(relative_path, pattern)
+        # print(f"Listing files in directory '{relative_path}' matching pattern '{pattern}':\n")
+        
+        # Use glob to find files matching the pattern
+        filenames = glob.glob(search_pattern)
+        
+        # Filter out directories
+        # filenames = [os.path.basename(file) for file in files if os.path.isfile(file)]
+        
+        # print("Filenames:")
+        # for filename in filenames:
+        #     print(f"- {filename}")
+        
+        return filenames
+    
+    except Exception as ex:
+        print(f"An unexpected error occurred: {ex}")
+        return []
 
 
+if __name__ == "__main__":
+    # use example
 
-    # Create a canvas for the PDF
-    c = canvas.Canvas(output_pdf_name, pagesize=letter)
-
-    # Get image dimensions
-    img_width, img_height = im.size
-
-    # Create an ImageReader object from the PIL image
-    im_reader = ImageReader(im)
-
-    # Get page dimensions
-    page_width, page_height = letter
-
-    # Scale the image if it's larger than the page size
-    if img_width > page_width or img_height > page_height:
-        scale = min(page_width / img_width, page_height / img_height)
-        img_width *= scale
-        img_height *= scale
-
-    # Calculate position to center the image on the page
-    x = (page_width - img_width) / 2
-    y = (page_height - img_height) / 2
-
-    # Draw the image onto the PDF canvas
-    c.drawImage(im_reader, x, y, width=img_width, height=img_height)
-
-    # Finalize and save the PDF
-    c.showPage()
-    c.save()
-    print(f'Done! PDF "{output_pdf_name}" containing the stego image has been saved.')
+    file_ext = ["*.jpg", "*.png", "*.jpeg"]
+    file_list = []
+    for ext in file_ext:
+        file_list += get_filename_list(INPUT_MEDIA_DIR, pattern=ext)
+    print(file_list)
+    # encode('original.jpg', "out.png", 'test_rev_shell.py', "test_out.pdf")
 
 
-# use example
-encode('original.jpg', "out.png", 'test_code_in.py', "test_out.pdf")
-# add extra newlines or comments (at least 3 chars worth) at end of file to offset bug where last few chars arent ported over
+    # # AUTO CODE FRAGMENT TESTING
+    # fragmenter = CodeFragmenter()
+    # with open("./test_rev_shell.py", 'r') as script:
+    #     code = script.read()
+    # parsed_code = ast.parse(code)
+    # # Apply the transformation
+    # transformed_code = fragmenter.visit(parsed_code)
 
+    # # Finalize by adding the new functions at the top
+    # transformed_code = fragmenter.finalize(transformed_code)
 
-
+    # # Convert AST back to code
+    # new_code = astor.to_source(transformed_code)
+    # print(new_code)
+    # with open("./2_ast_out.py", 'w') as fragment_file:
+    #     fragment_file.write(f"{new_code}\n\n")
 
 
