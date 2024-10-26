@@ -1,9 +1,9 @@
 from PIL import Image
 import numpy as np
-import textwrap
 import os
 import glob
 import numpy as np
+import sys
 
 
 # for PDF interactions
@@ -12,14 +12,19 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.utils import ImageReader
 
-INPUT_ENCODE_DIR = ".\\encode_in"
-OUTPUT_ENCODE_DIR = ".\\encode_out"
-INPUT_MEDIA_DIR = ".\\media_in"
-OUTPUT_MEDIA_DIR = ".\\media_out"
 
 
 def divide_string(string, parts):
     return ["".join(chunk) for chunk in np.array_split(list(string), parts)]
+
+
+def display_usage():
+    print("Usage: python script.py <input_img_list> <output_img_list> <secret_file>")
+    print("All arguments are required and must be valid file paths.")
+    print("\nArguments:")
+    print("  <input_media_dir>  Path to the input image list file")
+    print("  <output_media_dir> Path to the output image list file")
+    print("  <secret_file_path>     Path to the secret file")
 
 
 def get_file_str(filename):
@@ -189,7 +194,7 @@ def encode_secret(img_copy, secret_text):
 def encode(input_img_list, output_img_list, secret_file, output_pdf_name):
     '''
     Main function to encode a secret file into all target images, producing a PDF file containing all images.\n
-    Returns nothing, but `output_pdf_name` and all encoded images are saved in {OUTPUT_MEDIA_DIR}.
+    Returns nothing, but `output_pdf_name` and all encoded images are saved in {output_media_dir}.
 
     Args:
         input_img_list (List(str)): List of filepaths to target images for steganography. 
@@ -296,7 +301,7 @@ def get_filename_list(relative_path, pattern="*"):
         filenames = glob.glob(search_pattern)
         
         # Filter out directories
-        # filenames = [os.path.basename(file) for file in filenames if os.path.isfile(file)]
+        filenames = [os.path.basename(file) for file in filenames if os.path.isfile(file)]
         
         # print("Filenames:")
         # for filename in filenames:
@@ -310,23 +315,45 @@ def get_filename_list(relative_path, pattern="*"):
 
 
 if __name__ == "__main__":
-    # use example
-    # encode('.\\media_in\\original.jpg', ".\\media_out\\original.jpg", INPUT_ENCODE_DIR + "\\" +'test_complex_script.py', OUTPUT_MEDIA_DIR + "\\" +"test_out.pdf")
     # add extra newlines or comments (at least 3 chars worth) at end of file to offset bug where last few chars arent ported over
+    # Check if the correct number of arguments is provided
+    
+    if len(sys.argv) != 4:
+        display_usage()
+        sys.exit(1)
 
-    # use example
+    # Unpack arguments
+    input_media_dir, output_media_dir, secret_file_path = sys.argv[1:4]
+
+     # Verify each argument is a valid path
+    if not (os.path.isdir(input_media_dir) and os.path.isdir(output_media_dir) and os.path.isfile(secret_file_path)):
+        print("Error: One or more file paths are invalid.")
+        display_usage()
+        sys.exit(1)
+    
+    print("All file paths are valid.")
+    print(f"Input image list: {input_media_dir}")
+    print(f"Output image list: {output_media_dir}")
+    print(f"Secret file: {secret_file_path}")
 
     file_ext = ["*.jpg", "*.png", "*.jpeg"]
-    input_file_list = []
+    input_file_names = []
     for ext in file_ext:
-        input_file_list += get_filename_list(INPUT_MEDIA_DIR, pattern=ext)
+        input_file_names += get_filename_list(input_media_dir, pattern=ext)
 
-    output_file_list = [x.replace("media_in", "media_out") for x in input_file_list]
+    # output_file_list = [x.replace("media_in", "media_out") for x in input_file_list]
+    input_file_list = []
+    output_file_list = []
+    for name in input_file_names:
+        input_file_list.append(os.path.join(input_media_dir, name))
+        output_file_list.append(os.path.join(output_media_dir, name))
+    out_pdf_path = os.path.join(output_media_dir, "out.pdf")
     print("ASSET FILE LISTS")
     print(input_file_list)
     print(output_file_list)
-    encode(input_file_list, output_file_list, INPUT_ENCODE_DIR + "\\" +'test_complex_script.py', OUTPUT_MEDIA_DIR + "\\" +"test_out.pdf")
-
-
+    print(out_pdf_path)
+    encode(input_file_list, output_file_list, secret_file_path, out_pdf_path)
+    
+    # python ./encode.py ./media_in ./media_out ./encode_in/test_complex_script.py
 
 
