@@ -12,19 +12,26 @@ OUTPUT_MEDIA_DIR = ".\\media_out"
 
 def import_image(filename):
     '''
-    loads an image and returns a numpy array of the image
-    param filename (str): name of the image to be loaded
-
-    output (ndarray): 3D array of the image pixels (RGB)
+    Loads an image, returns numpy array
+    
+    Args:
+        filename (str): Filepath to target image.
+    
+    Returns:
+        ndarray: 3D array of the image pixels (RGB)
     '''
     return np.array(Image.open(filename))
 
 
 def decode_capacity(img_copy):
     '''
-    extract length of secret file from the image
-    param img_copy (ndarray): a 1d vector of the image (flattened)
-    output (int): the length of the secret file embedded to this image
+    Extract length of encoded secret data in image
+    
+    Args:
+        img_copy (ndarray): flattened 1D vector of image
+    
+    Returns:
+        int: length of encoded secret data in image
     '''
     
     # get the 2 lsb from the first 12 pixels (24 bits)
@@ -32,28 +39,33 @@ def decode_capacity(img_copy):
     # return it as an integer
     return int(bin_rep, 2)
 
+
 def bits_representation(integer, n_bits=8):
     '''
-    takes an integer and return its binary representaation
-    param integer (int): The integer to be converted to binary
-    param n_bits (int): number of total bits to return. Default is 8
+    Takes an integer and returns binary representation\n
 
-    output (str): string which represents the bits of the integer value
+    Args:
+        integer (int): Int value to convert to binary representation
+        n_bits (int): Number of bits to return, default=8
 
-    Example: bits_representation(3, 8) >> 00000011
+    Returns:
+        str: Result int after LSB reset
+
     '''
     return ''.join(['{0:0',str(n_bits),'b}']).format(integer)
 
 
-def decode_secret(flat_medium, length, run_code):        # KNOWN BUG: will leave out the last 3 chars, idk why
+def decode_secret(flat_medium, length, run_code = False):        # KNOWN BUG: will leave out the last 3 chars, idk why
     '''
-    Takes the image, length of hidden secret, and the extension of the output file,
-    then extracts secret file bits from the image, executes the decoded Python code,
-    and writes it to a new file with the specified extension.
+    Takes the image, secret length, and a bool flag to set whether to immediately execute the decoded content as code. 
+    Main function to extract secret from all images in target PDF file, from top to bottom of document in that order.
+    Extracted content will first be combined before (optional) execution and output to a file
+
+    Args:
+        flat_medium (ndarray): A 1D vector of the image (flattened)
+        length (int): The length of the secret file extracted using decode_capacity
+        run_code (bool): The flag to set whether to immediately execute extracted text as code
     
-    Parameters:
-    - flat_medium (ndarray): A 1D vector of the image (flattened)
-    - length (int): The length of the secret file extracted using decode_capacity
     '''
     # Initialize a string to accumulate the decoded characters
     decoded_code = ""
@@ -94,36 +106,15 @@ def decode_secret(flat_medium, length, run_code):        # KNOWN BUG: will leave
         return ""
 
 
-
-def decode(stego_img, sec_ext, run_code):
-    '''
-    this is the driver function to decode a secret file from the stego image
-    param stego_img(str): name of the stego image to extract secret from
-    param sec_ext(str): the extension of the secret file
-    output: a secret file with the specified extension
-    '''
-    # read image and flatten to 1D
-    img = import_image(stego_img).flatten()
-
-    # decode secret length from stego image
-    secret_size = decode_capacity(img)
-    print(f'secret size: {secret_size}')
-
-    # extract secret file from stego image
-    decode_secret(img, secret_size, run_code)
-
-    # print(f'Decoding completed, "{name}.{sec_ext}" should be in your directory')
-
-
 def extract_images_from_pdf(pdf_path):
     """
     Extracts all images from a PDF file and saves them as temporary files in memory.
-    
-    Parameters:
-    - pdf_path (str): Path to the PDF file
-    
-    Output:
-    - List of PIL Image objects extracted from the PDF
+
+    Args:
+        pdf_path (str): Path to the PDF file
+
+    Returns:
+        List(str): List of PIL Image objects extracted from the PDF
     """
     images = []
     # Open the PDF file
@@ -179,7 +170,6 @@ def decode_images_from_pdf(pdf_path, output_path):
 
 if __name__ == "__main__":
     # use example
-    # decode(OUTPUT_MEDIA_DIR + "\\" + 'original.jpg', 'py', False)
     decode_images_from_pdf(OUTPUT_MEDIA_DIR + "\\" +"test_out.pdf", OUTPUT_ENCODE_DIR + "\\" + "secret.py")
 
 

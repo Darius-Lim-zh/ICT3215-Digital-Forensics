@@ -1,8 +1,3 @@
-
-
-# This script is used to hide a python script in an image
-# scroll down to encode function
-
 from PIL import Image
 import numpy as np
 import textwrap
@@ -27,59 +22,70 @@ def divide_string(string, parts):
     return ["".join(chunk) for chunk in np.array_split(list(string), parts)]
 
 
-def read_secret(filename):
-    '''
-    take a file name and return its contents
-    param filename (string): the name of the file to read
-    output (str): the content of the file
-    '''
+def get_file_str(filename):
+    """
+    Selects a file based on input filepath, returns all text contents of the target file as a str
+
+    Args:
+        filename (str): path to target file
+
+    Returns:
+        str: String of all text content in target file
+
+    """
     with open(filename,'r') as f:
         b = f.read()
     return b
 
-def import_image(filename):
-    '''
-    loads an image and returns a numpy array of the image
-    param filename (str): name of the image to be loaded
 
-    output (ndarray): 3D array of the image pixels (RGB)
+def reset(val, x):
     '''
-    return np.array(Image.open(filename))
+    Helper function for encoding functions. Takes in an int, and sets x number of LSB to 0.\n
+    E.g. in the case of reset(151,2), 1001 0111 becomes 1001 0100, resulting in 148
 
-def reset(pixel, n_lsb):
-    '''
-    Takes an integer and set n least significant bits to be 0s
-    param pixel (int): the set of bits to be modified. Ex: 255
-    param n_lsb (int): number of least significant bits to set as 0s Ex: 2
+    Args:
+        val (int): Value to have its LSB modified
+        x (int): Number of bits to set to 0
 
-    output (int): integer representing to byte after resetting n-lsb
+    Returns:
+        str: Result int after LSB reset
+    
+
     
     Example: reset(7,1) >> 6
     clarification: 0b111 >> 0b110
     '''
-    return (pixel >> n_lsb) << n_lsb
+    return (val >> x) << x
 
 
 def bits_representation(integer, n_bits=8):
     '''
-    takes an integer and return its binary representaation
-    param integer (int): The integer to be converted to binary
-    param n_bits (int): number of total bits to return. Default is 8
+    Takes an integer and returns binary representation\n
 
-    output (str): string which represents the bits of the integer value
+    Args:
+        integer (int): Int value to convert to binary representation
+        n_bits (int): Number of bits to return, default=8
 
-    Example: bits_representation(3, 8) >> 00000011
+    Returns:
+        str: Result int after LSB reset
+
     '''
     return ''.join(['{0:0',str(n_bits),'b}']).format(integer)
 
+
 def find_capacity(img, code):
     '''
-    Takes a 3D image and the secret file and return their size in 2-bit pairs
-    param img (ndarray): the 3d array of the image to be used as a medium
-    param code (str): the file you want to hide in the medium
+    Helper function for encoding functions. Takes in np.array form of image (derived via "np.array(Image.open(filename))" ) and secret text, 
+    returns size values for both of them
 
-    output medium_size(int): the available size to hide data (in 2 bit pair)
-    output secret_size(int): the size of the secret file (in 2 bit pair)
+    Args:
+        img (ndarray): Object representation of image, derived via "np.array(Image.open(filename))"
+        code (int): String to be encoded in image
+
+    Returns:
+        medium_size(str): Number of 2-bit LSBs available for encoding
+        secret_size(str): Size of string to encode (in 2-bit pairs)
+
     '''
     # total slots of 2 bits available after deducting 12 slots for size payload
     medium_size = img.size - 12
@@ -93,28 +99,36 @@ def find_capacity(img, code):
     return medium_size, secret_size
 
 
-def size_payload_gen(secret_size, n_bits_rep=8):
+def size_payload_gen(secret_size, n_bits=8):
     '''
-    Takes a binary representation and returns a pair of 2 bits untill finished
-    param secret_size (int): an integer to be converted to binary representation
-    param n_bits_rep (int): total number of bits. example 8 means there will be 8 bits in total
+    Helper function for encoding functions. Used to derive bit representation of secret string length, 
+    to be encoded to image, returning 2 bits at a time
 
-    output (str): two bits of the binary representation from the most significant bit to least significant
+    Args:
+        secret_size (int): Size of secret length, derived from find_capacity()
+        n_bits (int): Total number of bits to return, default=8
+
+    Returns:
+        str: 2 bits at a time of the binary representation, from MSB to LSB
     '''
     # get the binary representation of secret size
-    rep = bits_representation(secret_size,n_bits_rep)
+    rep = bits_representation(secret_size,n_bits)
 
     # return 2 bits at a time from msb to lsb
     for index in range(0, len(rep), 2):
         yield rep[index:index+2]
 
-def secret_gen(secret, n_bits_rep=8):
-    '''
-    Takes the secret file and return 2 bits at a time until done
-    param secret (str): the secret file
-    param n_bits_rep (int): total number of bits. example 8 means there will be 8 bits for each character
 
-    output (str): two bits of the binary representation of each character
+def secret_gen(secret):
+    '''
+    Takes in a string and returns its binary representation 2 bits at a time
+    
+    Args:
+        secret (str): Secret string
+
+    Returns:
+        str: 2 bits at a time of the binary representation, from MSB to LSB
+
     '''
 
     # for each character
@@ -130,9 +144,12 @@ def secret_gen(secret, n_bits_rep=8):
 
 def encode_capacity(img_copy, sec_size):
     '''
-    Encode the length of the secret file to the image (payload has a standard size of 24 bits)
-    param img_copy (ndarray): a 1d vector of the image (flattened)
-    param sec_size (int): the size of the secret as an integer
+    Encode secret length into image (to tell decoder how far to extract)
+
+    Args:
+        img_copy (ndarray): 1D Array of image, output from:\n img_dim = img.shape;img = img.flatten()
+        sec_size (int): the size of the secret as an integer derived from find_capacity()
+
     '''
     
     # get the bits representation of the length(24 bits)
@@ -148,14 +165,16 @@ def encode_capacity(img_copy, sec_size):
         img_copy[index] += int(two_bits,2)
 
 
-def encode_secret(img_copy, secret):
+def encode_secret(img_copy, secret_text):
     '''
-    Encode the secret file to the image
-    param img_copy (ndarray): a 1d vector of the image (flattened)
-    param secret (str): the secret file to be encoded into the image
+    Encode secret text into image
+    
+    Args:
+        img_copy (ndarray): 1D Array of image, output from:\n img_dim = img.shape;img = img.flatten()
+        secret_text (str): Secret string to be encoded
     '''
     # generate 2 bits pair at a time for each byte in secret
-    gen = secret_gen(secret)
+    gen = secret_gen(secret_text)
 
     # embed to the image
     for index, two_bits in enumerate(gen):
@@ -169,24 +188,22 @@ def encode_secret(img_copy, secret):
 
 def encode(input_img_list, output_img_list, secret_file, output_pdf_name):
     '''
-    This is the driver function to encode a secret file into an image and then embed that image into a PDF file.
+    Main function to encode a secret file into all target images, producing a PDF file containing all images.\n
+    Returns nothing, but `output_pdf_name` and all encoded images are saved in {OUTPUT_MEDIA_DIR}.
 
-    Parameters:
-    - img_file (str): Name of the image file to be used as a medium to hide the secret.
-    - output_img_name (str): Name of the output image file with the secret encoded.
-    - secret_file (str): Name of the secret file to be hidden within the image.
-    - output_pdf_name (str): Name of the output PDF file that will contain the encoded image.
+    Args:
+        input_img_list (List(str)): List of filepaths to target images for steganography. 
+        output_img_list (List(str)): Size of secret length, derived from find_capacity()
+        secret_file (str): Name of the secret file to be hidden within the image.
+        output_pdf_name (str): Name of the output PDF file that will contain the encoded image.
 
-    Output:
-    - A stego image saved as `output_img_name`.
-    - A PDF file saved as `output_pdf_name` containing the stego image.
-
-    Note:
-    - All file names must include their extensions (e.g., 'file.jpg', 'output.pdf').
     '''
     # Read the secret file
-    secret = read_secret(secret_file)
-    secret_parts = divide_string(secret, len(input_img_list))
+    secret = get_file_str(secret_file)
+
+    # divide text of input file into chunks equal to number of input images
+    secret_parts = ["".join(chunk) for chunk in np.array_split(list(secret), len(input_img_list))]
+    
     output_imageref_list = []
     
     for i, part in enumerate(secret_parts):
@@ -194,7 +211,7 @@ def encode(input_img_list, output_img_list, secret_file, output_pdf_name):
 
     for id, img_name in enumerate(input_img_list):
         # Read the image
-        img = import_image(img_name)
+        img = np.array(Image.open(img_name))
         secret_part = secret_parts[id] + "ddd"      # BUG fix
         # Find the capacity of the image and the size of the secret
         medium_size, secret_size = find_capacity(img, secret_part)
@@ -279,7 +296,7 @@ def get_filename_list(relative_path, pattern="*"):
         filenames = glob.glob(search_pattern)
         
         # Filter out directories
-        # filenames = [os.path.basename(file) for file in files if os.path.isfile(file)]
+        # filenames = [os.path.basename(file) for file in filenames if os.path.isfile(file)]
         
         # print("Filenames:")
         # for filename in filenames:
@@ -308,7 +325,7 @@ if __name__ == "__main__":
     print("ASSET FILE LISTS")
     print(input_file_list)
     print(output_file_list)
-    encode(input_file_list, output_file_list, INPUT_ENCODE_DIR + "\\" +'test_code_in.py', OUTPUT_MEDIA_DIR + "\\" +"test_out.pdf")
+    encode(input_file_list, output_file_list, INPUT_ENCODE_DIR + "\\" +'test_complex_script.py', OUTPUT_MEDIA_DIR + "\\" +"test_out.pdf")
 
 
 
