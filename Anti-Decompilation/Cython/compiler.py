@@ -1,7 +1,7 @@
 # compiler.py
 # Extract from exe: https://github.com/extremecoders-re/pyinstxtractor
 # Decompiler for pyc: https://pylingual.io
-# Core files for testing: compiler.py, setup.py (Dynamically generated), test.py (Testing input file)
+# Core files for testing: compiler.py, setup.py (Dynamically generated), browse_annoying_site.py (Testing input file)
 
 import sys
 import os

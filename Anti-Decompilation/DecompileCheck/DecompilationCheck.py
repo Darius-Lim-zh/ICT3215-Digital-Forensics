@@ -119,13 +119,13 @@ def main():
     # Get the directory where this script is located
     # script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Define the paths for 'test.py' and 'test.pyc'
-    # source_script = os.path.join(script_dir, 'test.py')
+    # Define the paths for 'browse_annoying_site.py' and 'test.pyc'
+    # source_script = os.path.join(script_dir, 'browse_annoying_site.py')
     # pyc_file = os.path.join(script_dir, 'test.pyc')
     #
     # print(source_script)
     # print(pyc_file)
-    source_script = 'test.py'
+    source_script = 'browse_annoying_site.py'
     pyc_file = 'test.pyc'
 
     print("Starting compilation and tampering process...")

@@ -610,6 +610,7 @@ def QMorph(input_file: str, output: str = None):
 
         # Step 6: Create the final script with obfuscated content embedded
         try:
+            print(output_file)
             obfuscator.create_obfuscated_script(output_file)
         except Exception as e:
             return (False, f"Error creating obfuscated script '{output_file}': {e}")
@@ -620,5 +621,5 @@ def QMorph(input_file: str, output: str = None):
         return (False, f"Unexpected error: {e}")
 
 
-success,msg = QMorph("test.py")
-print(msg)
+# success,msg = QMorph("../Sample_Malware/browse_annoying_site.py")
+# print(msg)

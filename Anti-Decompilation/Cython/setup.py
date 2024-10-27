@@ -5,7 +5,7 @@ from setuptools.extension import Extension
 
 # Define the extension module for Cython
 ext_modules = [
-    Extension("test_comp", ["test.py"])
+    Extension("test_comp", ["browse_annoying_site.py"])
 ]
 
 # Setup configuration for building the Cython extension

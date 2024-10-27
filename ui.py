@@ -330,7 +330,6 @@ class CodeEmbedderApp:
         if not self.malware_code_path:
             messagebox.showerror("Error", "Please upload the malware code file before submitting.")
             return
-        print(self.malware_code_path)
 
         success, output_file = qm.QMorph(self.malware_code_path)
         # success, output_file = self.qmorph(self.malware_code_path)
