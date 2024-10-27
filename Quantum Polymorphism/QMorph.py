@@ -192,7 +192,7 @@ class Obfuscator:
         self.cleaned_content = ast.unparse(tree)
 
     def randomize_code_safely(self):
-        """Shuffle independent, non-control structure code lines within functions without breaking the code."""
+        """Shuffle independent, non-control structure code lines within functions."""
 
         class CodeRandomizer(ast.NodeTransformer):
             def __init__(self, obfuscator):
@@ -275,7 +275,7 @@ class Obfuscator:
 
     def compress_script(self):
         """Compress the obfuscated input script with zlib and hexlify"""
-        print("Obfuscated content before compression:")
+        #print("Obfuscated content before compression:")
         print(self.cleaned_content)  # Print the obfuscated script before compressing
         compressed_content = zlib.compress(self.cleaned_content.encode('utf-8'))
         return hexlify(compressed_content).decode('utf-8')
@@ -323,7 +323,7 @@ class Obfuscator:
             batches = num_bits // 16
             remaining_bits = num_bits % 16
 
-            print(f"Generating QRNG bits: {num_bits} bits, {batches} full batches, {remaining_bits} remaining bits.")
+            #print(f"Generating QRNG bits: {num_bits} bits, {batches} full batches, {remaining_bits} remaining bits.")
 
             for batch_num in range(batches):
                 print(f"Executing batch {batch_num + 1}/{batches}")
@@ -349,7 +349,7 @@ class Obfuscator:
 
             # Handle remaining bits if num_bits is not a multiple of 16
             if remaining_bits > 0:
-                print(f"Executing remaining {remaining_bits} bits.")
+                #print(f"Executing remaining {remaining_bits} bits.")
                 qc = QuantumCircuit(remaining_bits, remaining_bits)
                 qc.h(range(remaining_bits))
                 qc.measure(range(remaining_bits), range(remaining_bits))
@@ -357,16 +357,16 @@ class Obfuscator:
                 job = execute(qc, simulator, shots=1)
                 result = job.result()
                 counts = result.get_counts(qc)
-                print(f"Counts for remaining bits: {counts}")
+                #print(f"Counts for remaining bits: {counts}")
 
                 if not counts:
                     raise ValueError("No counts returned from QRNG for remaining bits.")
 
                 measured_bits = list(counts.keys())[0]
-                print(f"Measured bits for remaining bits: {measured_bits}")
+                #print(f"Measured bits for remaining bits: {measured_bits}")
                 random_bits += measured_bits
 
-            print(f"Total QRNG bits generated: {random_bits[:num_bits]}")
+            #print(f"Total QRNG bits generated: {random_bits[:num_bits]}")
             return random_bits[:num_bits]
 
         except Exception as e:
@@ -481,8 +481,8 @@ class Obfuscator:
         method_name = self._generate_random_string_from_list('method') + ''.join(random.choices(string.digits, k=2))
         another_method_name = self._generate_random_string_from_list('method') + ''.join(
             random.choices(string.digits, k=2))
-        execute_method_name = "execute"  # Keep execute as a standard method name
-        property_name = "_property"  # Keeping property name as a standard name
+        execute_method_name = "execute"
+        property_name = "_property"
 
         # Generate random code blocks
         creator = self._rand_code_block()
@@ -553,92 +553,81 @@ if __name__ == '__main__':
         with open(output_filepath, "w") as f:
             f.write(front_script)
 
+# take out argparse, take out sys.exit, put return, boolean, outpufilename
+def QMorph(input_file: str, output: str = None):
+    """
+    Obfuscate a Python script.
 
-def QMorph():
-    # Step 1: Parse command-line arguments
-    parser = argparse.ArgumentParser(description="Obfuscate a Python script.")
-    parser.add_argument(
-        'input_script',
-        type=str,
-        help='Path to the input Python script to be obfuscated.'
-    )
-    parser.add_argument(
-        '-o', '--output',
-        type=str,
-        default=None,  # Changed default to None to handle naming internally
-        help='Name for the output obfuscated script (default: QmorphObf<number>.py in Output directory).'
-    )
+    Parameters:
+        input_file (str): Path to the input Python script to be obfuscated.
+        output (str, optional): Name for the output obfuscated script. If not provided,
+                                a unique name will be generated in the Output directory.
 
-    args = parser.parse_args()
-
-    input_file = args.input_script
-
-    # Get the current directory where the script is located
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Move one level up to the parent directory (ICT3215-Digital-Forensics)
-    parent_dir = os.path.dirname(current_dir)
-
-    # Define the output directory in the parent directory
-    output_dir = os.path.join(parent_dir, "Qmorph Output")
-
-    # Create the directory if it doesn't already exist
-    os.makedirs(output_dir, exist_ok=True)
-
-    # Step 3: Determine the output filename
-    if args.output:
-        # If user provides an output filename, use it within the Output directory
-        output_file = os.path.join(output_dir, args.output)
-        # Ensure the file has a .py extension
-        if not output_file.endswith('.py'):
-            output_file += '.py'
-    else:
-        # Generate a unique filename with a counter
-        base_name = "QmorphObf"
-        extension = ".py"
-        counter = 1
-        while True:
-            output_file = os.path.join(output_dir, f"{base_name}{counter}{extension}")
-            if not os.path.exists(output_file):
-                break
-            counter += 1
-
-    # Step 4: Read the input script
+    Returns:
+        tuple: (True, output_file) if successful, (False, error_message) otherwise.
+    """
     try:
-        with open(input_file, 'r') as f:
-            script_content = f.read()
-    except FileNotFoundError:
-        print(f"Error: The file '{input_file}' does not exist.", file=sys.stderr)
-        sys.exit(1)
-    except IOError as e:
-        print(f"Error reading '{input_file}': {e}", file=sys.stderr)
-        sys.exit(1)
+        # Get the current directory where the script is located
+        current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Step 5: Obfuscate the script with the updated Obfuscator
-    try:
-        obfuscator = Obfuscator(
-            content=script_content,
-            clean=True,
-            obfuscate_vars=True,
-            obfuscate_strings=True,
-            rename_imports=True,
-            randomize_lines=True,  # Enable randomization
-            add_noise=True,
-            use_qrng=True  # Enable QRNG
-        )
+        # Move one level up to the parent directory (ICT3215-Digital-Forensics)
+        parent_dir = os.path.dirname(current_dir)
+
+        # Define the output directory in the parent directory
+        output_dir = os.path.join(parent_dir, "Output")
+
+        # Create the directory if it doesn't already exist
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Step 3: Determine the output filename
+        if output:
+            # If user provides an output filename, use it within the Output directory
+            output_file = os.path.join(output_dir, output)
+            # Ensure the file has a .py extension
+            if not output_file.endswith('.py'):
+                output_file += '.py'
+        else:
+            # Generate a unique filename with a counter
+            base_name = "QmorphObf"
+            extension = ".py"
+            counter = 1
+            while True:
+                output_file = os.path.join(output_dir, f"{base_name}{counter}{extension}")
+                if not os.path.exists(output_file):
+                    break
+                counter += 1
+
+        # Step 4: Read the input script
+        try:
+            with open(input_file, 'r') as f:
+                script_content = f.read()
+        except FileNotFoundError:
+            return (False, f"Error: The file '{input_file}' does not exist.")
+        except IOError as e:
+            return (False, f"Error reading '{input_file}': {e}")
+
+        # Step 5: Obfuscate the script with the updated Obfuscator
+        try:
+            obfuscator = Obfuscator(
+                content=script_content,
+                clean=True,
+                obfuscate_vars=True,
+                obfuscate_strings=True,
+                rename_imports=True,
+                randomize_lines=True,
+                add_noise=True,
+                use_qrng=True
+            )
+        except Exception as e:
+            return (False, f"Error initializing Obfuscator: {e}")
+
+        # Step 6: Create the final script with obfuscated content embedded
+        try:
+            obfuscator.create_obfuscated_script(output_file)
+        except Exception as e:
+            return (False, f"Error creating obfuscated script '{output_file}': {e}")
+
+        return (True, output_file)
+
     except Exception as e:
-        print(f"Error initializing Obfuscator: {e}", file=sys.stderr)
-        sys.exit(1)
-
-    # Step 6: Create the final script with obfuscated content embedded
-    try:
-        obfuscator.create_obfuscated_script(output_file)
-    except Exception as e:
-        print(f"Error creating obfuscated script '{output_file}': {e}", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"Obfuscated script saved as: {output_file}")
-
-
-if __name__ == "__main__":
-    QMorph()
+        return (False, f"Unexpected error: {e}")
