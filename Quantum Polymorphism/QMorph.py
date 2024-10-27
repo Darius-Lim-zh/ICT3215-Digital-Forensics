@@ -1,7 +1,5 @@
 import zlib
 import random
-import argparse
-import sys
 import string
 import builtins
 from binascii import hexlify
@@ -553,19 +551,8 @@ if __name__ == '__main__':
         with open(output_filepath, "w") as f:
             f.write(front_script)
 
-# take out argparse, take out sys.exit, put return, boolean, outpufilename
 def QMorph(input_file: str, output: str = None):
-    """
-    Obfuscate a Python script.
 
-    Parameters:
-        input_file (str): Path to the input Python script to be obfuscated.
-        output (str, optional): Name for the output obfuscated script. If not provided,
-                                a unique name will be generated in the Output directory.
-
-    Returns:
-        tuple: (True, output_file) if successful, (False, error_message) otherwise.
-    """
     try:
         # Get the current directory where the script is located
         current_dir = os.path.dirname(os.path.abspath(__file__))
