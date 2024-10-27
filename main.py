@@ -50,7 +50,7 @@ def main():
         print("Quantum Encryption enabled.")
 
     if args.quantumPolymorph:
-        print("Quantum Polymorphism enabled.")
+        print("Quantum_Polymorphism enabled.")
 
     if args.selfDestruct:
         print("Self Destruct enabled.")

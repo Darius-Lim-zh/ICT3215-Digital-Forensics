@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, StringVar, BooleanVar, ttk
 import os
 import Code_Embedding.code_embedder as ce
-# import Quantum_Polymorphism.Qmorph as qm
+import Quantum_Polymorphism.QMorph as qm
 
 class ToolTip:
     """Tooltip class to display tooltips for widgets."""
@@ -133,7 +133,7 @@ class CodeEmbedderApp:
 
         # New File Name entry
         # Initialize the StringVar with the default value
-        self.new_file_name = StringVar(value="Output\innocent.py")
+        self.new_file_name = StringVar(value="Output/innocent.py")
 
         # New File Name entry
         ttk.Label(middle_frame, text="New File Name:").grid(row=1, column=0, sticky="e", padx=5, pady=5)
@@ -330,10 +330,10 @@ class CodeEmbedderApp:
         if not self.malware_code_path:
             messagebox.showerror("Error", "Please upload the malware code file before submitting.")
             return
+        print(self.malware_code_path)
 
-        # Placeholder qmorph function - replace this with the actual qmorph processing call
-        # success, output_file = qm.qmorph(self.malware_code_path)
-        success, output_file = self.qmorph(self.malware_code_path)
+        success, output_file = qm.QMorph(self.malware_code_path)
+        # success, output_file = self.qmorph(self.malware_code_path)
 
         # Display the result
         self.result_box_qmorph.delete(1.0, tk.END)
@@ -344,6 +344,7 @@ class CodeEmbedderApp:
                                           f"QMorph Obfuscation Successful!\nOutput saved to: {output_file}\n\n{result_content}")
         else:
             self.result_box_qmorph.insert(tk.END, "An error occurred during QMorph obfuscation.")
+            self.result_box_qmorph.insert(tk.END, output_file)
 
 
     def create_cython_tab(self):

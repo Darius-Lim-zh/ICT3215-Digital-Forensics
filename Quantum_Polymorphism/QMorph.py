@@ -618,3 +618,7 @@ def QMorph(input_file: str, output: str = None):
 
     except Exception as e:
         return (False, f"Unexpected error: {e}")
+
+
+success,msg = QMorph("test.py")
+print(msg)
