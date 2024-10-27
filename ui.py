@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, StringVar, BooleanVar, ttk
 import os
 import Code_Embedding.code_embedder as ce
-
+# import Quantum_Polymorphism.Qmorph as qm
 
 class ToolTip:
     """Tooltip class to display tooltips for widgets."""
@@ -242,17 +242,116 @@ class CodeEmbedderApp:
         ttk.Label(self.excel_macro_frame, text="Excel Macro Creator will go here.").grid(row=0, column=0, sticky="nsew")
 
     def create_qmorph_tab(self):
-        """Create the QMorph Malware tab (Placeholder)."""
+        """Create the QMorph Malware tab."""
         self.qmorph_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.qmorph_frame, text="QMorph Malware")
-        ttk.Label(self.qmorph_frame, text="QMorph Malware obfuscation will go here.").grid(row=0, column=0,
-                                                                                           sticky="nsew")
+
+        # Initialize variables
+        self.malware_code_path = ""
+
+        # Top Frame for file uploading and showing code
+        top_frame = ttk.Frame(self.qmorph_frame)
+        top_frame.grid(row=0, column=0, sticky="ew")
+        top_frame.columnconfigure(1, weight=1)
+
+        # Malware Code Upload Section
+        ttk.Label(top_frame, text="Your Malware Code:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.upload_malware_btn = ttk.Button(top_frame, text="Upload Malware Code", command=self.load_malware_file)
+        self.upload_malware_btn.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+
+        # Info Icon and Tooltip for Upload
+        info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon.grid(row=0, column=2, sticky="w", padx=5, pady=5)
+        malware_tooltip_text = "Upload your custom malware code (.py) for QMorph obfuscation."
+        malware_tooltip = ToolTip(info_icon, malware_tooltip_text)
+
+        # Text box to display uploaded code (resizable)
+        self.code_display_box_qmorph = tk.Text(self.qmorph_frame, wrap=tk.WORD, background="#f0f0f0", height=10)
+        self.code_display_box_qmorph.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Submit button
+        self.qmorph_submit_btn = ttk.Button(self.qmorph_frame, text="Submit", command=self.submit_qmorph, padding=10)
+        self.qmorph_submit_btn.grid(row=2, column=0, pady=10, sticky="ew")
+
+        # Result display (resizable)
+        self.result_box_qmorph = tk.Text(self.qmorph_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.result_box_qmorph.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+
+    def load_malware_file(self):
+        """Load the malware code file for QMorph obfuscation."""
+        self.malware_code_path = filedialog.askopenfilename(
+            title="Select Malware Code File",
+            filetypes=[("Python files", "*.py")]
+        )
+        if self.malware_code_path:
+            with open(self.malware_code_path, 'r') as f:
+                code_content = f.read()
+            self.code_display_box_qmorph.delete(1.0, tk.END)
+            self.code_display_box_qmorph.insert(tk.END, code_content)
+
+    def qmorph(self, input_file):
+        """Placeholder function for QMorph obfuscation."""
+        # This function should include the logic for obfuscating the input file.
+        # For demonstration, we'll simulate it by copying the input file to an output file.
+        output_file = os.path.join("Output", "obfuscated_malware.py")
+        os.makedirs("Output", exist_ok=True)
+        try:
+            with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+                outfile.write(infile.read())  # Replace with actual obfuscation logic
+            return True, output_file
+        except Exception as e:
+            print(f"QMorph Error: {e}")
+            return False, None
+
+    def load_original_file(self):
+        """Load the original code file for the Code Embedder."""
+        self.original_code_path = filedialog.askopenfilename(
+            title="Select Original Code File",
+            filetypes=[("Python files", "*.py")]
+        )
+        if self.original_code_path:
+            with open(self.original_code_path, 'r') as f:
+                code_content = f.read()
+            self.code_display_box.delete(1.0, tk.END)
+            self.code_display_box.insert(tk.END, code_content)
+
+    def show_original_code(self):
+        """Display the content of the uploaded original code file."""
+        if self.original_code_path:
+            with open(self.original_code_path, 'r') as f:
+                code_content = f.read()
+            self.code_display_box.delete(1.0, tk.END)
+            self.code_display_box.insert(tk.END, code_content)
+        else:
+            messagebox.showerror("Error", "No file uploaded. Please upload an original code file first.")
+
+    def submit_qmorph(self):
+        """Process the QMorph obfuscation and display the result."""
+        if not self.malware_code_path:
+            messagebox.showerror("Error", "Please upload the malware code file before submitting.")
+            return
+
+        # Placeholder qmorph function - replace this with the actual qmorph processing call
+        # success, output_file = qm.qmorph(self.malware_code_path)
+        success, output_file = self.qmorph(self.malware_code_path)
+
+        # Display the result
+        self.result_box_qmorph.delete(1.0, tk.END)
+        if success:
+            with open(output_file, 'r') as f:
+                result_content = f.read()
+            self.result_box_qmorph.insert(tk.END,
+                                          f"QMorph Obfuscation Successful!\nOutput saved to: {output_file}\n\n{result_content}")
+        else:
+            self.result_box_qmorph.insert(tk.END, "An error occurred during QMorph obfuscation.")
+
 
     def create_cython_tab(self):
         """Create the Compile with Cython tab (Placeholder)."""
         self.cython_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.cython_frame, text="Compile with Cython")
         ttk.Label(self.cython_frame, text="Cython compilation will go here.").grid(row=0, column=0, sticky="nsew")
+
 
     def load_original_file(self):
         """Load the original code file."""
@@ -261,6 +360,7 @@ class CodeEmbedderApp:
         if self.original_code_path:
             self.code_display_box.delete(1.0, tk.END)
             self.code_display_box.insert(tk.END, f"Original Code File loaded successfully.\n")
+
 
     def load_embed_file(self):
         """Load the embed code file."""
@@ -274,6 +374,7 @@ class CodeEmbedderApp:
             function_names = [func.name for func in functions]
             self.populate_dropdown(function_names)
 
+
     def show_original_code(self):
         """Show the original code in the text box."""
         if self.original_code_path:
@@ -283,6 +384,7 @@ class CodeEmbedderApp:
             self.code_display_box.insert(tk.END, code_content)
         else:
             messagebox.showerror("Error", "Original Code File is not loaded.")
+
 
     def show_embed_code(self):
         """Show the embed code in the text box."""
@@ -294,6 +396,7 @@ class CodeEmbedderApp:
         else:
             messagebox.showerror("Error", "Embed Code File is not loaded.")
 
+
     def populate_dropdown(self, function_names):
         """Populate the dropdown with the extracted function names."""
         self.selected_function.set(function_names[0] if function_names else "")
@@ -301,6 +404,7 @@ class CodeEmbedderApp:
         menu.delete(0, "end")
         for name in function_names:
             menu.add_command(label=name, command=lambda value=name: self.selected_function.set(value))
+
 
     def submit(self):
         """Perform the embedding process and display the final code output."""
