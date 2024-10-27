@@ -22,6 +22,7 @@ class Obfuscator:
         self.obfuscated_strings = {}
         self.imported_modules = set()
         self.use_qrng = use_qrng
+        self.renamed_vars = {}  # Initialize renamed_vars
 
         if clean:
             self.clean_code()
@@ -95,7 +96,7 @@ class Obfuscator:
                 # Rename the function name
                 if node.name not in self.essential_names and not node.name.startswith(
                         '__') and node.name not in self.builtin_names:
-                    new_name = self.obfuscator._generate_random_string_from_list('method')
+                    new_name = self.obfuscator._generate_unique_random_string('method')
                     self.renamed_vars[node.name] = new_name
                     node.name = new_name
 
@@ -103,7 +104,7 @@ class Obfuscator:
                 if node.args:
                     for arg in node.args.args:
                         if arg.arg not in self.renamed_vars and arg.arg not in self.essential_names:
-                            new_name = self.obfuscator._generate_random_string_from_list('variable')
+                            new_name = self.obfuscator._generate_unique_random_string('variable')
                             self.renamed_vars[arg.arg] = new_name
                         if arg.arg in self.renamed_vars:
                             arg.arg = self.renamed_vars[arg.arg]
@@ -113,7 +114,7 @@ class Obfuscator:
             def visit_ClassDef(self, node):
                 # Rename the class name
                 if node.name not in self.essential_names and not node.name.startswith('__'):
-                    new_name = self.obfuscator._generate_random_string_from_list('class')
+                    new_name = self.obfuscator._generate_unique_random_string('class')
                     self.renamed_vars[node.name] = new_name
                     node.name = new_name
                 self.generic_visit(node)
@@ -125,7 +126,7 @@ class Obfuscator:
                 elif (node.id not in self.essential_names
                       and not node.id.startswith('__')
                       and node.id not in self.builtin_names):
-                    new_name = self.obfuscator._generate_random_string_from_list('variable')
+                    new_name = self.obfuscator._generate_unique_random_string('variable')
                     self.renamed_vars[node.id] = new_name
                     node.id = new_name
                 return node
@@ -141,7 +142,7 @@ class Obfuscator:
                         node.names[i] = self.renamed_vars[name]
                     else:
                         if name not in self.essential_names:
-                            new_name = self.obfuscator._generate_random_string_from_list('variable')
+                            new_name = self.obfuscator._generate_unique_random_string('variable')
                             self.renamed_vars[name] = new_name
                             node.names[i] = new_name
                 return node
@@ -153,7 +154,7 @@ class Obfuscator:
                         node.names[i] = self.renamed_vars[name]
                     else:
                         if name not in self.essential_names:
-                            new_name = self.obfuscator._generate_random_string_from_list('variable')
+                            new_name = self.obfuscator._generate_unique_random_string('variable')
                             self.renamed_vars[name] = new_name
                             node.names[i] = new_name
                 return node
@@ -162,6 +163,7 @@ class Obfuscator:
         renamer = VariableRenamer(self)
         tree = renamer.visit(tree)
         self.cleaned_content = ast.unparse(tree)
+        self.renamed_vars = renamer.renamed_vars  # Assign renamed_vars to Obfuscator
 
     def obfuscate_strings(self):
         """Obfuscate string literals using AST."""
@@ -177,6 +179,16 @@ class Obfuscator:
                         return node
                     new_value = self.obfuscator._encode_string(node.value)
                     return ast.parse(new_value).body[0].value
+                return node
+
+            def visit_JoinedStr(self, node):
+                # Recursively visit each value in the JoinedStr
+                for idx, value in enumerate(node.values):
+                    if isinstance(value, ast.Str):
+                        new_value = self.obfuscator._encode_string(value.s)
+                        node.values[idx] = ast.Constant(value=new_value)
+                    else:
+                        self.visit(value)  # Recursively handle other types
                 return node
 
             def is_code_string(self, value):
@@ -201,7 +213,7 @@ class Obfuscator:
                 shufflable = []
                 non_shufflable = []
                 for stmt in node.body:
-                    if isinstance(stmt, (ast.Assign, ast.AugAssign, ast.Expr, ast.Pass, ast.Return)):
+                    if isinstance(stmt, (ast.Assign, ast.AugAssign, ast.Expr, ast.Pass)):
                         shufflable.append(stmt)
                     else:
                         non_shufflable.append(stmt)
@@ -209,7 +221,7 @@ class Obfuscator:
                 # Shuffle the shufflable statements
                 random.shuffle(shufflable)
 
-                # Reconstruct the function body
+                # Reconstruct the function body, preserving the order of non-shufflable statements
                 node.body = shufflable + non_shufflable
 
                 # Continue traversing
@@ -273,8 +285,8 @@ class Obfuscator:
 
     def compress_script(self):
         """Compress the obfuscated input script with zlib and hexlify"""
-        #print("Obfuscated content before compression:")
-        print(self.cleaned_content)  # Print the obfuscated script before compressing
+        # Uncomment the next line to see the obfuscated script before compression
+        # print(self.cleaned_content)
         compressed_content = zlib.compress(self.cleaned_content.encode('utf-8'))
         return hexlify(compressed_content).decode('utf-8')
 
@@ -293,6 +305,14 @@ class Obfuscator:
             return self._generate_random_string_from_qrng_list(self.COMMON_VARIABLE_NAMES)
         else:
             return self._generate_random_string()
+
+    def _generate_unique_random_string(self, category, max_attempts=1000):
+        """Generate a unique random string from predefined lists based on category."""
+        for _ in range(max_attempts):
+            name = self._generate_random_string_from_list(category)
+            if name not in self.renamed_imports.values() and name not in self.renamed_vars.values():
+                return name
+        raise ValueError(f"Failed to generate a unique name for category '{category}' after {max_attempts} attempts.")
 
     def _generate_random_string_from_qrng_list(self, name_list):
         """Generate a random string from a provided list using QRNG or classical RNG."""
@@ -321,8 +341,6 @@ class Obfuscator:
             batches = num_bits // 16
             remaining_bits = num_bits % 16
 
-            #print(f"Generating QRNG bits: {num_bits} bits, {batches} full batches, {remaining_bits} remaining bits.")
-
             for batch_num in range(batches):
                 print(f"Executing batch {batch_num + 1}/{batches}")
                 qc = QuantumCircuit(16, 16)
@@ -347,7 +365,6 @@ class Obfuscator:
 
             # Handle remaining bits if num_bits is not a multiple of 16
             if remaining_bits > 0:
-                #print(f"Executing remaining {remaining_bits} bits.")
                 qc = QuantumCircuit(remaining_bits, remaining_bits)
                 qc.h(range(remaining_bits))
                 qc.measure(range(remaining_bits), range(remaining_bits))
@@ -355,16 +372,13 @@ class Obfuscator:
                 job = execute(qc, simulator, shots=1)
                 result = job.result()
                 counts = result.get_counts(qc)
-                #print(f"Counts for remaining bits: {counts}")
 
                 if not counts:
                     raise ValueError("No counts returned from QRNG for remaining bits.")
 
                 measured_bits = list(counts.keys())[0]
-                #print(f"Measured bits for remaining bits: {measured_bits}")
                 random_bits += measured_bits
 
-            #print(f"Total QRNG bits generated: {random_bits[:num_bits]}")
             return random_bits[:num_bits]
 
         except Exception as e:
@@ -426,7 +440,7 @@ class Obfuscator:
         var_names = []
         for _ in range(count):
             category = random.choice(['class', 'method', 'variable'])
-            var_name = self._generate_random_string_from_list(category)
+            var_name = self._generate_unique_random_string(category)
             # Ensure uniqueness by appending a random number
             var_name += ''.join(random.choices(string.digits, k=2))
             var_names.append(var_name)
@@ -475,9 +489,9 @@ class Obfuscator:
     def create_obfuscated_script(self, output_filepath):
         """Create the final script that combines the obfuscated payload with a dynamic front code."""
         # Generate random names for the placeholders from predefined lists
-        class_name = self._generate_random_string_from_list('class') + ''.join(random.choices(string.digits, k=2))
-        method_name = self._generate_random_string_from_list('method') + ''.join(random.choices(string.digits, k=2))
-        another_method_name = self._generate_random_string_from_list('method') + ''.join(
+        class_name = self._generate_unique_random_string('class') + ''.join(random.choices(string.digits, k=2))
+        method_name = self._generate_unique_random_string('method') + ''.join(random.choices(string.digits, k=2))
+        another_method_name = self._generate_unique_random_string('method') + ''.join(
             random.choices(string.digits, k=2))
         execute_method_name = "execute"
         property_name = "_property"
@@ -529,7 +543,7 @@ class {class_name}:
 
 if __name__ == '__main__':
     try:
-        (lambda __, _e: _e(__('''{self.compressed_content}'''), globals()))(lambda x: __import__('zlib').decompress(bytes.fromhex(x)),exec)
+        (lambda __, _e: _e(__('''{self.compressed_content}'''), globals()))(lambda x: __import__('zlib').decompress(bytes.fromhex(x)), exec)
         Handler883 = {class_name}(Manager070 = {self._rand_int()} {self._rand_op()} {self._rand_int()})
 
 {indented_vars_code}
@@ -543,7 +557,6 @@ if __name__ == '__main__':
         elif {self._rand_bool(False)}:
             {self._rand_pass()}
 """
-
         # Dedent the template to remove leading spaces
         front_script = textwrap.dedent(front_script_template)
 
@@ -551,8 +564,19 @@ if __name__ == '__main__':
         with open(output_filepath, "w") as f:
             f.write(front_script)
 
+    # take out argparse, take out sys.exit, put return, boolean, outpufilename
 def QMorph(input_file: str, output: str = None):
+    """
+    Obfuscate a Python script.
 
+    Parameters:
+        input_file (str): Path to the input Python script to be obfuscated.
+        output (str, optional): Name for the output obfuscated script. If not provided,
+                                a unique name will be generated in the Output directory.
+
+    Returns:
+        tuple: (True, output_file) if successful, (False, error_message) otherwise.
+    """
     try:
         # Get the current directory where the script is located
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -610,7 +634,6 @@ def QMorph(input_file: str, output: str = None):
 
         # Step 6: Create the final script with obfuscated content embedded
         try:
-            print(output_file)
             obfuscator.create_obfuscated_script(output_file)
         except Exception as e:
             return (False, f"Error creating obfuscated script '{output_file}': {e}")
