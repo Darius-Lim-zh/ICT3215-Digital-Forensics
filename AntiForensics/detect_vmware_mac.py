@@ -38,5 +38,9 @@ def vmware_mac():
         else:
             print_results(False, msg)
 
-if __name__ == "__main__":
+
+def call_detect_vmware_mac():
     vmware_mac()
+
+# if __name__ == "__main__":
+#     vmware_mac()
