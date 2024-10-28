@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a3f68942-cb40-4c6d-9a55-9ff0860a729f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/UI/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UI/ToolTip.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code_Embedding/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI/ui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/Cython/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/Cython/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti-Decompilation/Cython/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/Cython/test_comp.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Anti-Decompilation/Cython/test_comp.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/DecompileCheck/dynamic_loader.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,9 +26,6 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -39,22 +36,32 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.DecompilationCheck.executor&quot;: &quot;Run&quot;,
+    &quot;Python.RunTimeDecrypt.executor&quot;: &quot;Run&quot;,
+    &quot;Python.compiler.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runtimedecrypt_script.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.wrapper_script.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/niksb/OneDrive/Documents/GitHub/ICT3215-Digital-Forensics&quot;
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Darius/Documents/SIT Stuff v2/Y3T1/ICT3215-Digital Forensics/Project/ICT3215-Digital-Forensics/Anti-Decompilation/RunTimeDecryption&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Sandbox\ICT3215-Digital-Forensics\UI" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\RunTimeDecryption" />
+      <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\DecompileCheck" />
     </key>
-  </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-python-sdk-8336bb23522e-31b6be0877a2-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.19072.16" />
-      </set>
-    </attachedChunks>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\RunTimeDecryption" />
+      <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\DecompileCheck" />
+      <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\Cython" />
+    </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
