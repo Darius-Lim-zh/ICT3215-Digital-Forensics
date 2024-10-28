@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a3f68942-cb40-4c6d-9a55-9ff0860a729f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/Cython/setup.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/Cython/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti-Decompilation/Cython/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/Cython/test_comp.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Anti-Decompilation/Cython/test_comp.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Anti-Decompilation/DecompileCheck/dynamic_loader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
