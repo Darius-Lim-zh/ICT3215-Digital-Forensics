@@ -1,6 +1,7 @@
 import py_compile
 import os
 import sys
+import shutil
 
 
 def generate_dynamic_loader(pyc_file, xor_value):
@@ -39,10 +40,14 @@ if __name__ == '__main__':
     load_and_execute_pyc_in_memory(pyc_file, xor_value)
     """
 
-    with open('dynamic_loader.py', 'w') as f:
+    output_path = os.path.join('..', '..', 'Output', 'dynamic_loader.py')
+
+    with open(output_path, 'w') as f:
         f.write(loader_script)
 
     print(f"Generated dynamic_loader.py to run {pyc_file} with XOR value {hex(xor_value)}.")
+
+    print(f"dynamic_loader.py created at {output_path}")
 
     print(f"Sample: python dynamic_loader.py {pyc_file} {hex(xor_value)}")
 
@@ -74,8 +79,11 @@ def tamper_magic_number(pyc_file, xor_value):
     # Construct the tampered bytecode
     tampered_bytecode = tampered_magic + bytecode[4:]
 
+    # Moving to Output folder
+    output_path = os.path.join('..', '..', 'Output', os.path.basename(pyc_file))
+
     # Write the tampered bytecode back to the .pyc file
-    with open(pyc_file, 'wb') as f:
+    with open(output_path, 'wb') as f:
         f.write(tampered_bytecode)
 
     print(f"Successfully tampered with the magic number of '{pyc_file}'.")
@@ -114,6 +122,8 @@ def compile_and_tamper(source_script, pyc_file, xor_value):
 def decompile_check(source_script, pyc_file, xor_value=0xFF):
     compile_and_tamper(source_script, pyc_file, xor_value)
 
+    print("NOTE: The .pyc won't appear on intelliJ or visual studios as the magic number is not recognized")
+
 
 def main():
     # Get the directory where this script is located
@@ -125,7 +135,7 @@ def main():
     #
     # print(source_script)
     # print(pyc_file)
-    source_script = 'browse_annoying_site.py'
+    source_script = 'test.py'
     pyc_file = 'test.pyc'
 
     print("Starting compilation and tampering process...")

@@ -76,14 +76,20 @@ decrypted_code = decrypt_script(encrypted_data, iv, key)
 execute_decrypted_script(decrypted_code)
 '''
 
+    output_path = os.path.join('..', '..', 'Output', os.path.basename(output_file))
+
     # Write the decryption script with embedded encrypted code to the output file
-    with open(output_file, 'w') as f:
+    with open(output_path, 'w') as f:
         f.write(decryption_script)
+
+    print(f"Decryption script generated and saved to {output_path}")
 
 
 # To be used in UI
-def runtime_decrypt(input_file, output_file):
+def runtime_decrypt(input_file):
     key = os.urandom(32)
+
+    output_file = f"runtimedecrypt_{input_file}"
 
     # Encrypt the input script
     iv, encrypted_data = encrypt_script(input_file, key)
@@ -91,15 +97,15 @@ def runtime_decrypt(input_file, output_file):
     # Generate the decryption script with embedded encrypted data
     generate_decryption_script(iv, encrypted_data, key, output_file)
 
-    print(f"Decryption script generated and saved to {output_file}")
+    # print(f"Decryption script generated and saved to {output_file}")
 
 
 def main():
     # Input Python file to be encrypted
     input_file = 'test.py'  # Replace with your actual script path
-    output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
+    # output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
 
-    runtime_decrypt(input_file, output_file)
+    runtime_decrypt(input_file)
 
     # # Generate a 32-byte key (AES-256) or provide your own key
     # key = os.urandom(32)
