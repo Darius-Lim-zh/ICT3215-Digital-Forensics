@@ -5,7 +5,7 @@ import sys
 
 # Define the extension for Cython
 ext_modules = [
-    Extension("main", ["test.py"])  # Replace 'main' with your script's name if needed
+    Extension("main", ["browse_annoying_site.py"])  # Replace 'main' with your script's name if needed
 ]
 
 setup(

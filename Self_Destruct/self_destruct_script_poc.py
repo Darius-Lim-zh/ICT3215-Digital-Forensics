@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-def secure_delete(file_path, passes=1):
+def secure_delete(file_path=os.path.realpath(__file__), passes=1):
     """
     Securely delete the file by overwriting it with random data before deletion.
 
