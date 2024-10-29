@@ -47,9 +47,14 @@ class ToolTip:
             self.tooltip_window = None
 
 
+def extract_functions_and_imports(filepath):
+    """Extract function definitions from the uploaded code file."""
+    return ce.extract_functions_and_imports(filepath)
+
+
 class CodeEmbedderApp:
-    def __init__(self, root):
-        self.root = root
+    def __init__(self, main_root):
+        self.root = main_root
         self.root.title("Malware Tool Suite")
 
         # Make the window resizable
@@ -57,7 +62,7 @@ class CodeEmbedderApp:
         self.root.rowconfigure(0, weight=1)  # Allow the notebook to expand vertically
 
         # Main Notebook for tabs
-        self.notebook = ttk.Notebook(root)
+        self.notebook = ttk.Notebook(main_root)
         self.notebook.grid(row=0, column=0, sticky="nsew")  # Allow notebook to expand and contract with window
 
         # Add the tabs
@@ -195,6 +200,11 @@ class CodeEmbedderApp:
         self.xor_value_entry.insert(0, "0xFF")  # Default value
         self.xor_value_entry.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
 
+        # Tooltip for xor value
+        info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon.grid(row=1, column=3, sticky="w", padx=5, pady=5)
+        ToolTip(info_icon, "XOR magic number value to xor compile your py file with.")
+
         # Text box for displaying uploaded code (resizable)
         self.pyc_corrupt_code_display_box = tk.Text(self.pyc_corrupt_frame, wrap=tk.WORD, background="#f0f0f0",
                                                     height=10)
@@ -219,8 +229,6 @@ class CodeEmbedderApp:
         self.pyc_corrupt_frame.columnconfigure(0, weight=1)
         self.pyc_corrupt_frame.rowconfigure(2, weight=1)
         self.pyc_corrupt_frame.rowconfigure(4, weight=1)
-
-
 
     def submit_pyc_corrupt(self):
         """Execute the magic number corruption and display results."""
@@ -269,11 +277,6 @@ class CodeEmbedderApp:
                 messagebox.showerror("Error", f"Failed to read code file: {e}")
         else:
             messagebox.showerror("Error", "No Python code file uploaded.")
-
-
-    def extract_functions_and_imports(self, filepath):
-        """Extract function definitions from the uploaded code file."""
-        return ce.extract_functions_and_imports(filepath)
 
     def create_code_embedder_tab(self):
         """Create the Code Embedder tab with subtabs for different modes."""
@@ -358,7 +361,7 @@ class CodeEmbedderApp:
             self.code_preview_self_destruct.delete(1.0, tk.END)
 
     def submit_self_destruct(self):
-        """Embed the self destruct code into the original malware."""
+        """Embed the self-destruct code into the original malware."""
         if not self.self_destruct_uploaded_malware:
             messagebox.showerror("Error", "Please upload the original malware code file.")
             return
@@ -373,7 +376,7 @@ class CodeEmbedderApp:
             messagebox.showerror("Error", "No output file selected.")
             return
 
-        # Embed the self destruct function
+        # Embed the self-destruct function
         status = ce.embed_code(
             embed_code_filenames=[self.self_destruct_code_path],  # Pass as list
             func_names=[self.self_destruct_function],  # Pass as list
@@ -588,7 +591,7 @@ class CodeEmbedderApp:
 
         # Create tooltip for the "Original Code" section
         original_tooltip_text = "This is where you put your original mal code like rev shells etc."
-        original_tooltip = ToolTip(info_icon, original_tooltip_text)
+        ToolTip(info_icon, original_tooltip_text)
 
         # Spice Code Section
         ttk.Label(top_frame, text="Spice code:").grid(row=1, column=0, sticky="w", padx=5, pady=5)
@@ -762,6 +765,11 @@ class CodeEmbedderApp:
         self.pdf_embed_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.pdf_embed_frame, text="PDF Embedder")
 
+        # Ensure the main frame resizes correctly
+        self.pdf_embed_frame.columnconfigure(0, weight=1)
+        self.pdf_embed_frame.rowconfigure(1, weight=1)
+        self.pdf_embed_frame.rowconfigure(3, weight=1)
+
         # Variables for PDF embedder inputs
         self.malware_code_path_pdf = ""  # Unique variable for PDF Embedder
         self.selected_public_key_pdf = StringVar()
@@ -771,6 +779,8 @@ class CodeEmbedderApp:
         # Top frame for malware file upload in PDF Embedder
         top_frame_pdf = ttk.Frame(self.pdf_embed_frame)
         top_frame_pdf.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+        top_frame_pdf.columnconfigure(1, weight=1)  # Allow second column to expand
+        top_frame_pdf.columnconfigure(3, weight=0)  # Info icons don’t need expansion
 
         # Malware File upload section
         ttk.Label(top_frame_pdf, text="Malware File:").grid(row=0, column=0, sticky="w")
@@ -967,6 +977,11 @@ class CodeEmbedderApp:
         self.cython_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.cython_frame, text="Compile with Cython")
 
+        # Ensure the frame itself can resize
+        self.cython_frame.columnconfigure(0, weight=1)
+        self.cython_frame.rowconfigure(1, weight=1)
+        self.cython_frame.rowconfigure(4, weight=1)
+
         # Initialize variables
         self.cython_code_path = ""
         self.cython_output_file_name = StringVar(value="")
@@ -985,7 +1000,7 @@ class CodeEmbedderApp:
         info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
         info_icon.grid(row=0, column=2, sticky="w", padx=5, pady=5)
         cython_tooltip_text = "Upload a .py file to compile with Cython. Only .py files are accepted."
-        cython_tooltip = ToolTip(info_icon, cython_tooltip_text)
+        ToolTip(info_icon, cython_tooltip_text)
 
         # Display Box for code preview
         self.code_display_box_cython = tk.Text(self.cython_frame, wrap=tk.WORD, background="#f0f0f0", height=10)
@@ -1268,7 +1283,7 @@ class CodeEmbedderApp:
             self.upload_status_embed.config(text=f"Uploaded: {os.path.basename(filepath)}")
 
             # Extract functions and populate dropdown
-            imports, functions = self.extract_functions_and_imports(filepath)
+            imports, functions = extract_functions_and_imports(filepath)
             function_names = [func.name for func in functions]
             self.populate_dropdown_custom(function_names)
 
