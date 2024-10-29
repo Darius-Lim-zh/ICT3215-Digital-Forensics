@@ -66,6 +66,210 @@ class CodeEmbedderApp:
         self.create_qmorph_tab()
         self.create_cython_tab()
         self.create_embed_in_pdf_tab()
+        self.create_py_compile_corrupt_tab()
+        self.create_dynamic_cipher_tab()
+
+    def create_dynamic_cipher_tab(self):
+        """Create the Dynamic Cipher tab for runtime encryption and decryption of Python scripts."""
+        self.dynamic_cipher_frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(self.dynamic_cipher_frame, text="Dynamic Cipher")
+
+        # Top Frame for file uploading and showing code
+        top_frame = ttk.Frame(self.dynamic_cipher_frame)
+        top_frame.grid(row=0, column=0, sticky="ew")
+        top_frame.columnconfigure(1, weight=1)
+
+        # File Upload Section
+        ttk.Label(top_frame, text="Your Python Code:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.upload_dynamic_cipher_btn = ttk.Button(
+            top_frame, text="Upload Python Code", command=self.load_dynamic_cipher_file
+        )
+        self.upload_dynamic_cipher_btn.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        self.show_dynamic_cipher_code_btn = ttk.Button(
+            top_frame, text="Show Code", command=self.show_dynamic_cipher_code
+        )
+        self.show_dynamic_cipher_code_btn.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
+
+        # Tooltip for File Upload
+        info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon.grid(row=0, column=3, sticky="w", padx=5, pady=5)
+        ToolTip(info_icon, "Upload a .py file for Dynamic Cipher encryption and decryption.")
+
+        # Text box for displaying uploaded code (resizable)
+        self.dynamic_cipher_code_display_box = tk.Text(self.dynamic_cipher_frame, wrap=tk.WORD, background="#f0f0f0",
+                                                       height=10)
+        self.dynamic_cipher_code_display_box.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Submit button for encryption and decryption script generation
+        self.dynamic_cipher_submit_btn = ttk.Button(
+            self.dynamic_cipher_frame, text="Encrypt and Generate Decryption Script",
+            command=self.submit_dynamic_cipher, padding=10
+        )
+        self.dynamic_cipher_submit_btn.grid(row=2, column=0, pady=10, sticky="ew")
+
+        # Result display area with Scrollbar
+        self.dynamic_cipher_result_box = tk.Text(self.dynamic_cipher_frame, wrap=tk.WORD, background="#d9f0f0",
+                                                 height=10)
+        self.dynamic_cipher_result_box.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+        self.dynamic_cipher_scrollbar = ttk.Scrollbar(
+            self.dynamic_cipher_frame, orient="vertical", command=self.dynamic_cipher_result_box.yview
+        )
+        self.dynamic_cipher_scrollbar.grid(row=3, column=1, sticky="ns", pady=10)
+        self.dynamic_cipher_result_box.configure(yscrollcommand=self.dynamic_cipher_scrollbar.set)
+
+        # Configure resizing
+        self.dynamic_cipher_frame.columnconfigure(0, weight=1)
+        self.dynamic_cipher_frame.rowconfigure(1, weight=1)
+        self.dynamic_cipher_frame.rowconfigure(3, weight=1)
+
+    def load_dynamic_cipher_file(self):
+        """Load the Python file for Dynamic Cipher encryption."""
+        filepath = filedialog.askopenfilename(
+            title="Select Python Code File",
+            filetypes=[("Python files", "*.py")],
+        )
+        if filepath:
+            self.dynamic_cipher_code_path = filepath
+            self.dynamic_cipher_code_display_box.delete(1.0, tk.END)
+            self.dynamic_cipher_code_display_box.insert(tk.END, f"Successfully uploaded: {os.path.basename(filepath)}")
+            self.dynamic_cipher_result_box.delete(1.0, tk.END)
+
+    def show_dynamic_cipher_code(self):
+        """Display the content of the uploaded Python code file."""
+        if self.dynamic_cipher_code_path:
+            try:
+                with open(self.dynamic_cipher_code_path, 'r') as f:
+                    code_content = f.read()
+                self.dynamic_cipher_code_display_box.delete(1.0, tk.END)
+                self.dynamic_cipher_code_display_box.insert(tk.END, code_content)
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to read code file: {e}")
+        else:
+            messagebox.showerror("Error", "No Python code file uploaded.")
+
+    def submit_dynamic_cipher(self):
+        """Encrypt the Python code and generate a decryption script."""
+        if not self.dynamic_cipher_code_path:
+            messagebox.showerror("Error", "Please upload the Python code file before submitting.")
+            return
+
+        # Perform the encryption and decryption script generation
+        from Anti_Decompilation.RunTimeDecryption import RunTimeDecrypt as dyc
+        status = dyc.runtime_decrypt(self.dynamic_cipher_code_path)
+
+        # Display a success message
+        self.dynamic_cipher_result_box.delete(1.0, tk.END)
+        self.dynamic_cipher_result_box.insert(
+            tk.END, "Encryption and Decryption Script Generated Successfully!\n"
+        )
+
+    def create_py_compile_corrupt_tab(self):
+        """Create the Corrupt Magic number of python script using magic number tab."""
+        self.pyc_corrupt_frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(self.pyc_corrupt_frame, text="PyCompile Corrupt Magic")
+
+        # Top Frame for file uploading and showing code
+        top_frame = ttk.Frame(self.pyc_corrupt_frame)
+        top_frame.grid(row=0, column=0, sticky="ew")
+        top_frame.columnconfigure(1, weight=1)
+
+        # File Upload Section
+        ttk.Label(top_frame, text="Your Python Code:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.upload_pyc_corrupt_btn = ttk.Button(
+            top_frame, text="Upload Python Code", command=self.load_pyc_corrupt_file
+        )
+        self.upload_pyc_corrupt_btn.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
+        self.show_pyc_corrupt_code_btn = ttk.Button(
+            top_frame, text="Show Code", command=self.show_pyc_corrupt_code
+        )
+        self.show_pyc_corrupt_code_btn.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
+
+        # Tooltip for File Upload
+        info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon.grid(row=0, column=3, sticky="w", padx=5, pady=5)
+        ToolTip(info_icon, "Upload a .py file to corrupt the magic number.")
+
+        # XOR Value Input
+        ttk.Label(top_frame, text="XOR Value (Hex):").grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        self.xor_value_entry = ttk.Entry(top_frame)
+        self.xor_value_entry.insert(0, "0xFF")  # Default value
+        self.xor_value_entry.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+
+        # Text box for displaying uploaded code (resizable)
+        self.pyc_corrupt_code_display_box = tk.Text(self.pyc_corrupt_frame, wrap=tk.WORD, background="#f0f0f0",
+                                                    height=10)
+        self.pyc_corrupt_code_display_box.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Submit button for corruption action
+        self.pyc_corrupt_submit_btn = ttk.Button(
+            self.pyc_corrupt_frame, text="Corrupt Magic Number", command=self.submit_pyc_corrupt, padding=10
+        )
+        self.pyc_corrupt_submit_btn.grid(row=3, column=0, pady=10, sticky="ew")
+
+        # Result display area with Scrollbar
+        self.pyc_corrupt_result_box = tk.Text(self.pyc_corrupt_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.pyc_corrupt_result_box.grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
+        self.pyc_corrupt_scrollbar = ttk.Scrollbar(
+            self.pyc_corrupt_frame, orient="vertical", command=self.pyc_corrupt_result_box.yview
+        )
+        self.pyc_corrupt_scrollbar.grid(row=4, column=1, sticky="ns", pady=10)
+        self.pyc_corrupt_result_box.configure(yscrollcommand=self.pyc_corrupt_scrollbar.set)
+
+        # Configure resizing
+        self.pyc_corrupt_frame.columnconfigure(0, weight=1)
+        self.pyc_corrupt_frame.rowconfigure(2, weight=1)
+        self.pyc_corrupt_frame.rowconfigure(4, weight=1)
+
+
+
+    def submit_pyc_corrupt(self):
+        """Execute the magic number corruption and display results."""
+        if not self.pyc_corrupt_code_path:
+            messagebox.showerror("Error", "Please upload the Python code file before submitting.")
+            return
+
+        # Get XOR value from the input field
+        try:
+            xor_value = int(self.xor_value_entry.get(), 16)  # Parse as hexadecimal
+        except ValueError:
+            messagebox.showerror("Error", "Invalid XOR value. Please enter a valid hexadecimal number.")
+            return
+
+        # Perform the corruption process
+        from Anti_Decompilation.PyCCorruptor import PyCCorruptor as pyc
+        status, output_file = pyc.pyc_corrupt_source_with_xor(self.pyc_corrupt_code_path, xor_value=xor_value)
+
+        self.pyc_corrupt_result_box.delete(1.0, tk.END)
+        if status:
+            self.pyc_corrupt_result_box.insert(tk.END, f"Corruption Successful!\nOutput saved to: {output_file}\n")
+        else:
+            self.pyc_corrupt_result_box.insert(tk.END, "An error occurred during corruption.\n")
+
+    def load_pyc_corrupt_file(self):
+        """Load the Python file for PyCompile corruption."""
+        filepath = filedialog.askopenfilename(
+            title="Select Python Code File",
+            filetypes=[("Python files", "*.py")],
+        )
+        if filepath:
+            self.pyc_corrupt_code_path = filepath
+            self.pyc_corrupt_code_display_box.delete(1.0, tk.END)
+            self.pyc_corrupt_code_display_box.insert(tk.END, f"Successfully uploaded: {os.path.basename(filepath)}")
+            self.pyc_corrupt_result_box.delete(1.0, tk.END)
+
+    def show_pyc_corrupt_code(self):
+        """Display the content of the uploaded Python code file."""
+        if self.pyc_corrupt_code_path:
+            try:
+                with open(self.pyc_corrupt_code_path, 'r') as f:
+                    code_content = f.read()
+                self.pyc_corrupt_code_display_box.delete(1.0, tk.END)
+                self.pyc_corrupt_code_display_box.insert(tk.END, code_content)
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to read code file: {e}")
+        else:
+            messagebox.showerror("Error", "No Python code file uploaded.")
+
 
     def extract_functions_and_imports(self, filepath):
         """Extract function definitions from the uploaded code file."""
@@ -856,7 +1060,7 @@ class CodeEmbedderApp:
     def cython_compiler(self, input_file, output_file):
         """Compile a Python file using Cython to produce a .pyc output."""
         try:
-            from Self_Destruct.compile import compile_with_cython
+            from Anti_Decompilation.Cython.compile import compile_with_cython
             # Actual Cython compilation call, replace with your import and actual call from compile.py
             location = compile_with_cython(input_file, output_file)  # Replace with actual function call
             if location is not None:
@@ -1027,8 +1231,6 @@ class CodeEmbedderApp:
                 )
         else:
             messagebox.showerror("Error", "An error occurred during code embedding.")
-
-    # --- Custom Mode Methods ---
 
     def load_original_file_custom(self):
         """Load the original code file for the Custom mode."""

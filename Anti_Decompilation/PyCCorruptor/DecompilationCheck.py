@@ -21,7 +21,7 @@ def load_and_execute_pyc_in_memory(pyc_file, xor_value):
 
     restored_bytecode = xor_magic_number(bytecode, xor_value)
     code_object = marshal.loads(restored_bytecode[16:])
-    
+
     globals_dict = globals()
     exec(code_object, globals_dict, globals_dict)
 
@@ -91,6 +91,7 @@ def tamper_magic_number(pyc_file, xor_value):
     print(f"XOR value used: {xor_value}")
     print(f"Magic number length: {magic_number_len}")
 
+
 def compile_and_tamper(source_script, pyc_file, xor_value):
     """
     Compiles a Python script to a .pyc file and tampers with its magic number.
@@ -143,6 +144,7 @@ def main():
     compile_and_tamper(source_script, pyc_file, 0xff)
 
     print("Process completed successfully.")
+
 
 if __name__ == '__main__':
     main()

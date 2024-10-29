@@ -5,7 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a3f68942-cb40-4c6d-9a55-9ff0860a729f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Anti_Decompilation/PyCCorruptor/DecompilationCheck.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Anti_Decompilation/PyCCorruptor/PyCCorruptor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/DecompileCheck/DecompilationCheck.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/DecompileCheck/dynamic_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/PyCCorruptor/dynamic_loader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/DecompileCheck/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/PyCCorruptor/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/DecompileCheck/test_comp.exe" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/PyCCorruptor/test_comp.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/RunTimeDecryption/RunTimeDecrypt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/RunTimeDecryption/RunTimeDecrypt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/SelfDEscalator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Output/SelfDEscalator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/keypair_0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/keypair_0.pub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/keypair_1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/keypair_1.pub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/keypair_2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/keypair_2.pub" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Self_Destruct/compile.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/Cython/compile.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,6 +37,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -55,6 +73,7 @@
       <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\DecompileCheck" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Sandbox\ICT3215-Digital-Forensics\Anti_Decompilation\Cython" />
       <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\RunTimeDecryption" />
       <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\DecompileCheck" />
       <recent name="C:\Users\Darius\Documents\SIT Stuff v2\Y3T1\ICT3215-Digital Forensics\Project\ICT3215-Digital-Forensics\Anti-Decompilation\Cython" />
