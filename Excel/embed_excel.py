@@ -5,28 +5,34 @@ import sys
 from win32com.client import Dispatch
 
 def embed_python_script_and_vba(original_excel_path, python_file_path, output_excel_path, vba_macro_path):
-    # Temporary .xlsx path to avoid format issues
-    temp_xlsx_path = output_excel_path.replace(".xlsm", ".xlsx")
+    try:
+        # Temporary .xlsx path to avoid format issues
+        temp_xlsx_path = output_excel_path.replace(".xlsm", ".xlsx")
 
-    # Load the existing Excel file and preserve its content
-    workbook = openpyxl.load_workbook(original_excel_path)
-    sheet = workbook.active  # Use the active sheet or specify a sheet name if needed
+        # Load the existing Excel file and preserve its content
+        workbook = openpyxl.load_workbook(original_excel_path)
+        sheet = workbook.active  # Use the active sheet or specify a sheet name if needed
 
-    # Read the Python file and encode it as base64
-    with open(python_file_path, "rb") as f:
-        encoded_script = base64.b64encode(f.read()).decode('utf-8')
+        # Read the Python file and encode it as base64
+        with open(python_file_path, "rb") as f:
+            encoded_script = base64.b64encode(f.read()).decode('utf-8')
 
-    # Insert the encoded Python script into cell XFD1048576 (last cell in the sheet)
-    sheet["XFD1048576"] = encoded_script
+        # Insert the encoded Python script into cell XFD1048576 (last cell in the sheet)
+        sheet["XFD1048576"] = encoded_script
 
-    # Save the workbook temporarily as a .xlsx file
-    workbook.save(temp_xlsx_path)
+        # Save the workbook temporarily as a .xlsx file
+        workbook.save(temp_xlsx_path)
 
-    # Add VBA macro and save as .xlsm
-    add_vba_macro(temp_xlsx_path, output_excel_path, vba_macro_path)
+        # Add VBA macro and save as .xlsm
+        add_vba_macro(temp_xlsx_path, output_excel_path, vba_macro_path)
 
-    # Remove the temporary .xlsx file
-    os.remove(temp_xlsx_path)
+        # Remove the temporary .xlsx file
+        os.remove(temp_xlsx_path)
+        return True
+
+    except Exception as e:
+        print(f"Error occurred {e}")
+        return False
 
 def add_vba_macro(input_excel_path, output_excel_path, vba_macro_path):
     # Read VBA macro from text file
@@ -58,12 +64,12 @@ def add_vba_macro(input_excel_path, output_excel_path, vba_macro_path):
     finally:
         excel_app.Quit()
 
-if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python embed_excel.py <original_excel> <python_script> <output_excel> <vba_macro_path>")
-    else:
-        original_excel_path = sys.argv[1]
-        python_script = sys.argv[2]
-        output_excel = sys.argv[3]
-        vba_macro_path = sys.argv[4]
-        embed_python_script_and_vba(original_excel_path, python_script, output_excel, vba_macro_path)
+# if __name__ == "__main__":
+#     if len(sys.argv) != 5:
+#         print("Usage: python embed_excel.py <original_excel> <python_script> <output_excel> <vba_macro_path>")
+#     else:
+#         original_excel_path = sys.argv[1]
+#         python_script = sys.argv[2]
+#         output_excel = sys.argv[3]
+#         vba_macro_path = sys.argv[4]
+#         embed_python_script_and_vba(original_excel_path, python_script, output_excel, vba_macro_path)

