@@ -85,20 +85,27 @@ execute_decrypted_script(decrypted_code)
 
     print(f"Decryption script generated and saved to {output_path}")
 
+    return output_path
+
 
 # To be used in UI
 def runtime_decrypt(input_file):
     key = os.urandom(32)
+    base_name = input_file.split('/')[-1]
+    output_file = f"{input_file.split(base_name)[0]}runtimedecrypt_{base_name}"
 
-    output_file = f"runtimedecrypt_{input_file}"
+    # output_file = f"runtimedecrypt_{input_file}"
 
     # Encrypt the input script
     iv, encrypted_data = encrypt_script(input_file, key)
 
     # Generate the decryption script with embedded encrypted data
-    generate_decryption_script(iv, encrypted_data, key, output_file)
+    output_path = generate_decryption_script(iv, encrypted_data, key, output_file)
+    folder_path = input_file.split('/')[:-2]
+    final_output = folder_path + "/" + output_path
 
     # print(f"Decryption script generated and saved to {output_file}")
+    return final_output
 
 def main():
     # Input Python file to be encrypted
