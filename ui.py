@@ -11,6 +11,7 @@ from PDF import embed_pdf_rsa as pdf
 from Anti_Decompilation.DynamicCipher import RunTimeDecrypt as dyc
 from Anti_Decompilation.PyCCorruptor import PyCCorruptor as pyc
 from Anti_Decompilation.CythonCompile.compile import compile_with_cython
+import Fragmentation_Stego.encode as stego
 
 
 class ToolTip:
@@ -952,10 +953,10 @@ class CodeEmbedderApp:
         # Malware File upload section
         ttk.Label(top_frame_pdf, text="Malware File:").grid(row=0, column=0, sticky="w")
         self.malware_upload_btn_pdf = ttk.Button(top_frame_pdf, text="Upload Malware File",
-                                                 command=self.load_malware_file_pdf)
+                                                command=self.load_malware_file_pdf)
         self.malware_upload_btn_pdf.grid(row=0, column=1, sticky="ew", padx=5)
         self.show_malware_btn_pdf = ttk.Button(top_frame_pdf, text="Show Malware Code",
-                                               command=self.show_malware_code_pdf)
+                                            command=self.show_malware_code_pdf)
         self.show_malware_btn_pdf.grid(row=0, column=2, sticky="ew", padx=5)
 
         # Tooltip for Malware File upload in PDF Embedder
@@ -968,48 +969,77 @@ class CodeEmbedderApp:
         self.upload_status_label_pdf = ttk.Label(top_frame_pdf, text="No file uploaded.", foreground="blue")
         self.upload_status_label_pdf.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=5)
 
-        # Public Key PEM File Upload
-        ttk.Label(top_frame_pdf, text="Public Key (PEM):").grid(row=2, column=0, sticky="w")
-        self.upload_public_key_btn_pdf = ttk.Button(top_frame_pdf, text="Upload Public Key",
+        # Subtab notebook for Embedding Options
+        subtab_notebook = ttk.Notebook(self.pdf_embed_frame)
+        subtab_notebook.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+
+        # Embedding Options Subtab
+        pdf_embed_subtab = ttk.Frame(subtab_notebook, padding="10")
+        subtab_notebook.add(pdf_embed_subtab, text="Embedding Options")
+
+        # Public Key PEM File Upload in Embedding Options subtab
+        ttk.Label(pdf_embed_subtab, text="Public Key (PEM):").grid(row=0, column=0, sticky="w")
+        self.upload_public_key_btn_pdf = ttk.Button(pdf_embed_subtab, text="Upload Public Key",
                                                     command=self.load_public_key_pdf)
-        self.upload_public_key_btn_pdf.grid(row=2, column=1, sticky="ew", padx=5)
-        self.show_public_key_btn_pdf = ttk.Button(top_frame_pdf, text="Show Public Key",
-                                                  command=self.show_public_key_pdf)
-        self.show_public_key_btn_pdf.grid(row=2, column=2, sticky="ew", padx=5)
+        self.upload_public_key_btn_pdf.grid(row=0, column=1, sticky="ew", padx=5)
+        self.show_public_key_btn_pdf = ttk.Button(pdf_embed_subtab, text="Show Public Key",
+                                                command=self.show_public_key_pdf)
+        self.show_public_key_btn_pdf.grid(row=0, column=2, sticky="ew", padx=5)
 
         # Tooltip for Public Key upload in PDF Embedder
-        info_icon_key_pdf = tk.Label(top_frame_pdf, text="ℹ️", font=("Arial", 14), cursor="hand2")
-        info_icon_key_pdf.grid(row=2, column=3, sticky="w", padx=5)
+        info_icon_key_pdf = tk.Label(pdf_embed_subtab, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_key_pdf.grid(row=0, column=3, sticky="w", padx=5)
         public_key_tooltip_text_pdf = "Select an existing PEM public key to embed in PDFs."
         ToolTip(info_icon_key_pdf, public_key_tooltip_text_pdf)
 
-        # PDF Folder selection for input files
-        ttk.Label(top_frame_pdf, text="PDF Input Folder:").grid(row=3, column=0, sticky="w")
-        self.folder_select_btn_pdf = ttk.Button(top_frame_pdf, text="Select Folder", command=self.select_pdf_folder_pdf)
-        self.folder_select_btn_pdf.grid(row=3, column=1, sticky="ew", padx=5)
+        # PDF Folder selection for input files in Embedding Options subtab
+        ttk.Label(pdf_embed_subtab, text="PDF Input Folder:").grid(row=1, column=0, sticky="w")
+        self.folder_select_btn_pdf = ttk.Button(pdf_embed_subtab, text="Select Folder", command=self.select_pdf_folder_pdf)
+        self.folder_select_btn_pdf.grid(row=1, column=1, sticky="ew", padx=5)
 
         # Tooltip for PDF Input Folder selection
-        info_icon_folder_pdf = tk.Label(top_frame_pdf, text="ℹ️", font=("Arial", 14), cursor="hand2")
-        info_icon_folder_pdf.grid(row=3, column=3, sticky="w", padx=5)
+        info_icon_folder_pdf = tk.Label(pdf_embed_subtab, text="ℹ️", font=("Arial", 14), cursor="hand2")
+        info_icon_folder_pdf.grid(row=1, column=3, sticky="w", padx=5)
         folder_tooltip_text_pdf = "Choose the folder containing PDF files to embed the malware into."
         ToolTip(info_icon_folder_pdf, folder_tooltip_text_pdf)
 
         # PDF Checkboxes frame for file selection
-        self.pdf_checkboxes_frame_pdf = ttk.Frame(self.pdf_embed_frame)
-        self.pdf_checkboxes_frame_pdf.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.pdf_checkboxes_frame_pdf = ttk.Frame(pdf_embed_subtab)
+        self.pdf_checkboxes_frame_pdf.grid(row=2, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
 
-        # Submit button and output result box for PDF Embedder
-        self.submit_pdf_embed_btn = ttk.Button(self.pdf_embed_frame, text="Submit", command=self.submit_pdf_embed,
-                                               padding=10)
-        self.submit_pdf_embed_btn.grid(row=2, column=0, sticky="ew", pady=10)
+        # Submit button and output result box in Embedding Options subtab
+        self.submit_pdf_embed_btn = ttk.Button(pdf_embed_subtab, text="Submit", command=self.submit_pdf_embed, padding=10)
+        self.submit_pdf_embed_btn.grid(row=3, column=0, columnspan=4, sticky="ew", pady=10)
 
-        # Unique Text box for displaying results in PDF Embedder tab
-        self.result_box_pdf_embed = tk.Text(self.pdf_embed_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
-        self.result_box_pdf_embed.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+        # Unique Text box for displaying results in Embedding Options subtab
+        self.result_box_pdf_embed = tk.Text(pdf_embed_subtab, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.result_box_pdf_embed.grid(row=4, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
 
-        # Status area for showing messages like key generation or upload success in PDF Embedder
-        self.keygen_status_label_pdf = ttk.Label(self.pdf_embed_frame, text="", foreground="green")
-        self.keygen_status_label_pdf.grid(row=4, column=0, sticky="w", padx=10, pady=5)
+        # Status area for showing messages in Embedding Options subtab
+        self.keygen_status_label_pdf = ttk.Label(pdf_embed_subtab, text="", foreground="green")
+        self.keygen_status_label_pdf.grid(row=5, column=0, columnspan=4, sticky="w", padx=10, pady=5)
+
+        # Image Embedding Options Subtab
+        image_embed_subtab = ttk.Frame(subtab_notebook, padding="10")
+        subtab_notebook.add(image_embed_subtab, text="Image Embedding Options")
+
+        # Image Input Folder selection in Image Embedding Options subtab
+        ttk.Label(image_embed_subtab, text="Image Input Folder:").grid(row=0, column=0, sticky="w")
+        self.folder_select_btn_image = ttk.Button(image_embed_subtab, text="Select Folder", command=self.select_input_image_folder)
+        self.folder_select_btn_image.grid(row=0, column=1, sticky="ew", padx=5)
+
+        # Image Checkboxes frame for file selection in Image Embedding Options subtab
+        self.image_checkboxes_frame = ttk.Frame(image_embed_subtab)
+        self.image_checkboxes_frame.grid(row=1, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
+
+        # Submit button and output result box in Embedding Options subtab
+        self.submit_image_embed_btn = ttk.Button(image_embed_subtab, text="Submit", command=self.submit_image_embed, padding=10)
+        self.submit_image_embed_btn.grid(row=2, column=0, columnspan=4, sticky="ew", pady=10)
+
+        # Unique Text box for displaying results in Embedding Options subtab
+        self.result_box_image_embed = tk.Text(image_embed_subtab, wrap=tk.WORD, background="#d9f0f0", height=10)
+        self.result_box_image_embed.grid(row=3, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
+
 
     def load_malware_file_pdf(self):
         """Load the malware code file specifically for PDF Embedder."""
@@ -1021,8 +1051,14 @@ class CodeEmbedderApp:
             self.upload_status_label_pdf.config(text=f"Uploaded: {os.path.basename(self.malware_code_path_pdf)}")
             with open(self.malware_code_path_pdf, 'r') as f:
                 code_content = f.read()
-            self.result_box_pdf_embed.delete(1.0, tk.END)
-            self.result_box_pdf_embed.insert(tk.END, f"Loaded Malware Code for PDF Embed:\n{code_content}\n")
+            
+            # Check if result_box_pdf_embed is visible before updating it
+            if self.result_box_pdf_embed.winfo_viewable():
+                self.result_box_pdf_embed.delete(1.0, tk.END)
+                self.result_box_pdf_embed.insert(tk.END, f"Loaded Malware Code for PDF Embed:\n{code_content}\n")
+            elif self.result_box_image_embed.winfo_viewable():
+                self.result_box_image_embed.delete(1.0, tk.END)
+                self.result_box_image_embed.insert(tk.END, f"Loaded Malware Code for PDF Embed:\n{code_content}\n")
 
     def load_public_key_pdf(self):
         """Load the PEM public key file for PDF Embedder."""
@@ -1103,7 +1139,55 @@ class CodeEmbedderApp:
                 full_path = os.path.join(self.pdf_folder_path, pdf_file)
                 self.pdf_files_selected[full_path] = var
 
+    def select_input_image_folder(self):
+        """Select folder containing PDFs and display available files as checkboxes."""
+        self.image_folder_path = filedialog.askdirectory(title="Select Image Folder")
+        if self.image_folder_path:
+            # Clear existing checkboxes in the pdf_checkboxes_frame
+            for widget in self.image_checkboxes_frame.winfo_children():
+                widget.destroy()
 
+            # Display PDFs as checkboxes with full path stored
+            image_files = [f for f in os.listdir(self.image_folder_path) 
+                           if (f.endswith(".jpg") or f.endswith(".jpeg") or f.endswith(".png"))]
+            self.image_files_selected = {}
+            for i, image_file in enumerate(image_files):
+                var = IntVar(value=0)
+                # Display filename only, store full path
+                checkbox = ttk.Checkbutton(self.image_checkboxes_frame, text=image_file, variable=var)
+                checkbox.grid(row=i, column=0, sticky="w")
+                full_path = os.path.join(self.image_folder_path, image_file)
+                self.image_files_selected[full_path] = var
+    
+    def submit_image_embed(self):
+        """Submit the image files for embedding. Also outputs PDF file"""
+        input_secret_file = self.malware_code_path_pdf
+        selected_images = [f for f, var in self.image_files_selected.items() if var.get() == 1]
+        if not input_secret_file:
+            messagebox.showerror("Error", "No malware file uploaded.")
+            return
+        if not selected_images:
+            messagebox.showerror("Error", "Please select at least one image file.")
+            return
+        
+        output_folder_str = "Output/PDF_with_images"
+        output_folder = Path(output_folder_str)
+        output_folder.mkdir(parents=True, exist_ok=True)
+
+        # Create a list of new paths with filenames in the output folder
+        
+        output_file_list = [os.path.join(output_folder_str, os.path.basename(path)) for path in selected_images]
+        output_pdf_file = os.path.join(output_folder_str,"out.pdf")
+        
+        self.result_box_image_embed.delete(1.0, tk.END)
+        # self.result_box_image_embed.insert(tk.END, f"Input values: {selected_images}\n{output_file_list}\n{input_secret_file}\n{output_pdf_file}\n")
+        
+        self.result_box_image_embed.insert(tk.END, "Encoding process started")
+        res = stego.encode(selected_images, output_file_list, input_secret_file, output_pdf_file)
+        if res:
+            self.result_box_image_embed.insert(tk.END, f"\n\nDone! PDF path: {res} containing the stego image has been saved.")
+        else:
+            self.result_box_image_embed.insert(tk.END, "Image steganography/PDF Embedding failed due to error") 
 
     def create_cython_tab(self):
         """Create the Compile with CythonCompile tab for taking a Python file input, showing code, and compiling with
