@@ -4,7 +4,7 @@ import os
 import Code_Embedding.code_embedder as ce
 import Quantum_Polymorphism.QMorph as qm
 import glob  # For file pattern matching
-# import Anti_Decompilation.Cython.compiler as adc
+# import Anti_Decompilation.CythonCompile.compiler as adc
 from pathlib import Path
 
 
@@ -159,7 +159,7 @@ class CodeEmbedderApp:
             return
 
         # Perform the encryption and decryption script generation
-        from Anti_Decompilation.RunTimeDecryption import RunTimeDecrypt as dyc
+        from Anti_Decompilation.DynamicCipher import RunTimeDecrypt as dyc
         status = dyc.runtime_decrypt(self.dynamic_cipher_code_path)
 
         # Display a success message
@@ -1105,10 +1105,10 @@ class CodeEmbedderApp:
 
 
     def create_cython_tab(self):
-        """Create the Compile with Cython tab for taking a Python file input, showing code, and compiling with
-        Cython."""
+        """Create the Compile with CythonCompile tab for taking a Python file input, showing code, and compiling with
+        CythonCompile."""
         self.cython_frame = ttk.Frame(self.notebook, padding="10")
-        self.notebook.add(self.cython_frame, text="Compile with Cython")
+        self.notebook.add(self.cython_frame, text="Compile with CythonCompile")
 
         # Ensure the frame itself can resize
         self.cython_frame.columnconfigure(0, weight=1)
@@ -1132,7 +1132,7 @@ class CodeEmbedderApp:
         # Info Icon and Tooltip for Upload
         info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
         info_icon.grid(row=0, column=2, sticky="w", padx=5, pady=5)
-        cython_tooltip_text = "Upload a .py file to compile with Cython. Only .py files are accepted."
+        cython_tooltip_text = "Upload a .py file to compile with CythonCompile. Only .py files are accepted."
         ToolTip(info_icon, cython_tooltip_text)
 
         # Display Box for code preview
@@ -1158,7 +1158,7 @@ class CodeEmbedderApp:
         self.result_box_cython.grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
 
     def load_cython_file(self):
-        """Load the Python file for Cython compilation."""
+        """Load the Python file for CythonCompile compilation."""
         self.cython_code_path = filedialog.askopenfilename(
             title="Select Python File to Compile",
             filetypes=[("Python files", "*.py")]
@@ -1170,7 +1170,7 @@ class CodeEmbedderApp:
             self.code_display_box_cython.insert(tk.END, code_content)
 
     def submit_cython(self):
-        """Submit the file for compilation with Cython."""
+        """Submit the file for compilation with CythonCompile."""
         input_file = self.cython_code_path
         output_file = self.cython_output_file_name.get().strip()
 
@@ -1206,10 +1206,10 @@ class CodeEmbedderApp:
             self.result_box_cython.insert(tk.END, "An error occurred during compilation.")
 
     def cython_compiler(self, input_file, output_file):
-        """Compile a Python file using Cython to produce a .pyc output."""
+        """Compile a Python file using CythonCompile to produce a .pyc output."""
         try:
-            from Anti_Decompilation.Cython.compile import compile_with_cython
-            # Actual Cython compilation call, replace with your import and actual call from compile.py
+            from Anti_Decompilation.CythonCompile.compile import compile_with_cython
+            # Actual CythonCompile compilation call, replace with your import and actual call from compile.py
             location = compile_with_cython(input_file, output_file)  # Replace with actual function call
             if location is not None:
                 return True, location

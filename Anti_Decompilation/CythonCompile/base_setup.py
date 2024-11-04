@@ -3,7 +3,7 @@ from Cython.Build import cythonize
 from setuptools.extension import Extension
 import sys
 
-# Define the extension for Cython
+# Define the extension for CythonCompile
 ext_modules = [
     Extension("main", ["browse_annoying_site.py"])  # Replace 'main' with your script's name if needed
 ]

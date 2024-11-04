@@ -50,7 +50,7 @@ setup(
     with open(setup_file, 'w') as f:
         f.write(setup_content)
 
-    # Run the dynamically generated setup.py to compile with Cython
+    # Run the dynamically generated setup.py to compile with CythonCompile
     try:
         subprocess.run([sys.executable, "setup.py", "build_ext", "--inplace"], check=True)
     except subprocess.CalledProcessError as e:
@@ -184,7 +184,7 @@ def main():
         sys.exit(1)
 
     cython_compilation(target_script)
-    # # Compile the target script with Cython
+    # # Compile the target script with CythonCompile
     # compile_with_cython(target_script)
     #
     # # Get the base name of the script without extension
