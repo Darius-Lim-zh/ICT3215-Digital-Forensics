@@ -31,7 +31,7 @@ setuptools
 pyinstaller
 cryptography
 astor
-
+reportlab
 openpyxl 
 pywin32 
 PyPDF2 
