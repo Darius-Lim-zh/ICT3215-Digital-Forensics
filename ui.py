@@ -74,8 +74,6 @@ class CodeEmbedderApp:
         # Restrict maximum window size to screen dimensions
         self.root.maxsize(screen_width, screen_height)
 
-
-
         # Make the window resizable
         self.root.columnconfigure(0, weight=1)  # Allow the main notebook to expand horizontally
         self.root.rowconfigure(0, weight=1)  # Allow the notebook to expand vertically
@@ -671,12 +669,20 @@ class CodeEmbedderApp:
 
         # Perform the encryption and decryption script generation
         status = dyc.runtime_decrypt(self.dynamic_cipher_code_path)
-
-        # Display a success message
-        self.dynamic_cipher_result_box.delete(1.0, tk.END)
-        self.dynamic_cipher_result_box.insert(
-            tk.END, "Encryption and Decryption Script Generated Successfully!\n"
-        )
+        if status:
+            # Display a success message
+            self.dynamic_cipher_result_box.delete(1.0, tk.END)
+            self.dynamic_cipher_result_box.insert(
+                tk.END, "Encryption and Decryption Script Generated Successfully!\n"
+            )
+            self.dynamic_cipher_result_box.insert(
+                tk.END, f"File output to {status}\n"
+            )
+        else:
+            self.dynamic_cipher_result_box.delete(1.0, tk.END)
+            self.dynamic_cipher_result_box.insert(
+                tk.END, "Encryption Failed! \n Please Debug this"
+            )
 
     def create_py_compile_corrupt_tab(self):
         """Create the Corrupt Magic number of python script using magic number tab."""
@@ -1371,36 +1377,39 @@ class CodeEmbedderApp:
         )
         self.show_malware_btn.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
 
+        # Tooltip for Malware Code section
         info_icon = tk.Label(top_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
         info_icon.grid(row=0, column=3, sticky="w", padx=5, pady=5)
-
-        # Create tooltip for the "Malware Code" section
         malware_tooltip_text = "Upload your custom malware code (.py) for QMorph obfuscation."
         malware_tooltip = ToolTip(info_icon, malware_tooltip_text)
 
+        # Code Preview title
+        ttk.Label(self.qmorph_frame, text="Code Preview", font=("Arial", 12, "bold")).grid(row=1, column=0, sticky="w",
+                                                                                           padx=5, pady=(10, 2))
+
         # Text box to display uploaded code (resizable)
         self.code_display_box_qmorph = tk.Text(self.qmorph_frame, wrap=tk.WORD, background="#f0f0f0", height=10)
-        self.code_display_box_qmorph.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.code_display_box_qmorph.grid(row=2, column=0, sticky="nsew", padx=10, pady=(5, 10))
 
         # Submit button
         self.qmorph_submit_btn = ttk.Button(
             self.qmorph_frame, text="Submit", command=self.submit_qmorph, padding=10
         )
-        self.qmorph_submit_btn.grid(row=2, column=0, pady=10, sticky="ew")
+        self.qmorph_submit_btn.grid(row=3, column=0, pady=10, sticky="ew")
 
         # Result display (resizable) with Scrollbar
         self.result_box_qmorph = tk.Text(self.qmorph_frame, wrap=tk.WORD, background="#d9f0f0", height=10)
-        self.result_box_qmorph.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
+        self.result_box_qmorph.grid(row=4, column=0, sticky="nsew", padx=10, pady=10)
 
         self.scrollbar_qmorph = ttk.Scrollbar(self.qmorph_frame, orient="vertical",
                                               command=self.result_box_qmorph.yview)
-        self.scrollbar_qmorph.grid(row=3, column=1, sticky="ns", pady=10)
+        self.scrollbar_qmorph.grid(row=4, column=1, sticky="ns", pady=10)
         self.result_box_qmorph.configure(yscrollcommand=self.scrollbar_qmorph.set)
 
         # Configure resizing
         self.qmorph_frame.columnconfigure(0, weight=1)
-        self.qmorph_frame.rowconfigure(1, weight=1)
-        self.qmorph_frame.rowconfigure(3, weight=1)
+        self.qmorph_frame.rowconfigure(2, weight=1)  # Ensures code display box is resizable
+        self.qmorph_frame.rowconfigure(4, weight=1)  # Ensures result box is resizable
 
     def load_malware_file(self):
         """Load the malware code file for QMorph obfuscation."""

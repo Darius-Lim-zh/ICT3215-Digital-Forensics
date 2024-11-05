@@ -3,6 +3,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 
+
 def encrypt_script(input_file, key):
     # Read the script content
     with open(input_file, 'rb') as f:
@@ -24,6 +25,7 @@ def encrypt_script(input_file, key):
 
     # Return both the IV and the encrypted data
     return iv, encrypted_data
+
 
 def generate_decryption_script(iv, encrypted_data, key, output_file):
     # Convert key, IV, and encrypted data to byte literals
@@ -90,22 +92,29 @@ execute_decrypted_script(decrypted_code)
 
 # To be used in UI
 def runtime_decrypt(input_file):
-    key = os.urandom(32)
-    base_name = input_file.split('/')[-1]
-    output_file = f"{input_file.split(base_name)[0]}runtimedecrypt_{base_name}"
+    try:
+        print(input_file)
+        key = os.urandom(32)
+        base_name = input_file.split('/')[-1]
+        output_file = f"{input_file.split(base_name)[0]}runtimedecrypt_{base_name}"
 
-    # output_file = f"runtimedecrypt_{input_file}"
+        # output_file = f"runtimedecrypt_{input_file}"
 
-    # Encrypt the input script
-    iv, encrypted_data = encrypt_script(input_file, key)
+        # Encrypt the input script
+        iv, encrypted_data = encrypt_script(input_file, key)
+        print(output_file)
+        # Generate the decryption script with embedded encrypted data
+        output_path = generate_decryption_script(iv, encrypted_data, key, output_file)
+        # folder_path = input_file.split('/')[:-2]
+        # folder_path.append(output_path)
 
-    # Generate the decryption script with embedded encrypted data
-    output_path = generate_decryption_script(iv, encrypted_data, key, output_file)
-    folder_path = input_file.split('/')[:-2]
-    final_output = folder_path + "/" + output_path
+        # final_output = "/".join(folder_path)
 
-    # print(f"Decryption script generated and saved to {output_file}")
-    return final_output
+        # print(f"Decryption script generated and saved to {output_file}")
+        return output_file
+    except Exception:
+        return None
+
 
 def main():
     # Input Python file to be encrypted
@@ -114,7 +123,6 @@ def main():
 
     runtime_decrypt(input_file)
 
-
 # def main():
 #     # Input Python file to be encrypted
 #     input_file = 'test.py'  # Replace with your actual script path
@@ -122,16 +130,16 @@ def main():
 #
 #     runtime_decrypt(input_file)
 
-    # # Generate a 32-byte key (AES-256) or provide your own key
-    # key = os.urandom(32)
-    #
-    # # Encrypt the input script
-    # iv, encrypted_data = encrypt_script(input_file, key)
-    #
-    # # Generate the decryption script with embedded encrypted data
-    # generate_decryption_script(iv, encrypted_data, key, output_file)
-    #
-    # print(f"Decryption script generated and saved to {output_file}")
+# # Generate a 32-byte key (AES-256) or provide your own key
+# key = os.urandom(32)
+#
+# # Encrypt the input script
+# iv, encrypted_data = encrypt_script(input_file, key)
+#
+# # Generate the decryption script with embedded encrypted data
+# generate_decryption_script(iv, encrypted_data, key, output_file)
+#
+# print(f"Decryption script generated and saved to {output_file}")
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
