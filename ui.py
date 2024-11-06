@@ -1064,7 +1064,7 @@ class CodeEmbedderApp:
 
         # Image Embedding Options Subtab
         image_embed_subtab = ttk.Frame(subtab_notebook, padding="10")
-        subtab_notebook.add(image_embed_subtab, text="Image Embedding Options")
+        subtab_notebook.add(image_embed_subtab, text="Image Steganography")
 
         # Configure rows and columns for dynamic resizing within Image Embedding Options subtab
         image_embed_subtab.columnconfigure(0, weight=1)
