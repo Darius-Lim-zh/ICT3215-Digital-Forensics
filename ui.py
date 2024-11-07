@@ -61,7 +61,7 @@ def extract_functions_and_imports(filepath):
 class CodeEmbedderApp:
     def __init__(self, main_root):
         self.root = main_root
-        self.root.title("Malware Tool Suite")
+        self.root.title("ObfusQrypt")
 
         # Get screen height and set the window max height to the screen height
         screen_height = self.root.winfo_screenheight()
