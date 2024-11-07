@@ -1009,11 +1009,11 @@ class CodeEmbedderApp:
         subtab_notebook.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
         self.pdf_embed_frame.rowconfigure(1, weight=1)  # Ensure notebook expands
 
-        # PEM Key Encryption Options Subtab
+        # PEM Key Encryption Subtab
         pdf_embed_subtab = ttk.Frame(subtab_notebook, padding="10")
-        subtab_notebook.add(pdf_embed_subtab, text="PEM Key Encryption Options")
+        subtab_notebook.add(pdf_embed_subtab, text="PEM Key Encryption")
 
-        # Configure rows and columns for dynamic resizing within PEM Key Encryption Options subtab
+        # Configure rows and columns for dynamic resizing within PEM Key Encryption subtab
         pdf_embed_subtab.columnconfigure(0, weight=1)
         pdf_embed_subtab.rowconfigure(2, weight=1)
         pdf_embed_subtab.rowconfigure(4, weight=1)
