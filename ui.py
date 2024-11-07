@@ -1004,16 +1004,16 @@ class CodeEmbedderApp:
         self.upload_status_label_pdf = ttk.Label(top_frame_pdf, text="No file uploaded.", foreground="blue")
         self.upload_status_label_pdf.grid(row=1, column=0, columnspan=4, sticky="w", padx=5, pady=5)
 
-        # Subtab notebook for Embedding Options
+        # Subtab notebook for PEM Key Encryption Option
         subtab_notebook = ttk.Notebook(self.pdf_embed_frame)
         subtab_notebook.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
         self.pdf_embed_frame.rowconfigure(1, weight=1)  # Ensure notebook expands
 
-        # Embedding Options Subtab
+        # PEM Key Encryption Options Subtab
         pdf_embed_subtab = ttk.Frame(subtab_notebook, padding="10")
-        subtab_notebook.add(pdf_embed_subtab, text="Embedding Options")
+        subtab_notebook.add(pdf_embed_subtab, text="PEM Key Encryption Options")
 
-        # Configure rows and columns for dynamic resizing within Embedding Options subtab
+        # Configure rows and columns for dynamic resizing within PEM Key Encryption Options subtab
         pdf_embed_subtab.columnconfigure(0, weight=1)
         pdf_embed_subtab.rowconfigure(2, weight=1)
         pdf_embed_subtab.rowconfigure(4, weight=1)
