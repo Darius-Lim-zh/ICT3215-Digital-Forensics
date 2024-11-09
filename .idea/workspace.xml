@@ -6,10 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a3f68942-cb40-4c6d-9a55-9ff0860a729f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/manga.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/Output/PDF_with_images/manga.jpeg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/original.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/Output/PDF_with_images/original.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/out.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Output/PDF_with_images/out.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui.py" beforeDir="false" afterPath="$PROJECT_DIR$/ui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Output/SelfDEscalator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Output/SelfDEscalator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sample_Malware/sample_escalator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Sample_Malware/sample_escalator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Self_Destruct/self_destruct_script_poc.py" beforeDir="false" afterPath="$PROJECT_DIR$/Self_Destruct/self_destruct_script_poc.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
