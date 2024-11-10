@@ -420,7 +420,8 @@ class CodeEmbedderApp:
             self.check_vm_frame, text="ℹ️", font=("Arial", 14), cursor="hand2"
         )
         info_icon_submit.grid(row=5, column=1, sticky="w", padx=5, pady=5)
-        submit_tooltip_text = "Click to embed the selected VM detection checks into the uploaded malware code. The output file will contain the embedded code."
+        submit_tooltip_text = "Click to embed the selected VM detection checks into the uploaded malware code. The " \
+                              "output file will contain the embedded code."
         ToolTip(info_icon_submit, submit_tooltip_text)
 
         # Success Message Label
@@ -428,14 +429,14 @@ class CodeEmbedderApp:
         self.success_label_check_vm.grid(row=6, column=0, sticky="w", padx=5, pady=5)
 
         # Code Preview Text Widget with Scrollbar
-        self.code_preview_check_vm = ctk.CTkTextbox(self.check_vm_frame, wrap="word", height=15, state="disabled")
+        self.code_preview_check_vm = ctk.CTkTextbox(self.check_vm_frame, wrap="word", height=15)
         self.code_preview_check_vm.grid(row=7, column=0, sticky="nsew", padx=5, pady=5)
 
         self.scrollbar_check_vm = ctk.CTkScrollbar(
             self.check_vm_frame, orientation="vertical", command=self.code_preview_check_vm.yview
         )
-        self.scrollbar_check_vm.grid(row=7, column=1, sticky="ns", pady=5)
-        self.code_preview_check_vm.configure(yscrollcommand=self.scrollbar_check_vm.set)
+        # self.scrollbar_check_vm.grid(row=7, column=1, sticky="ns", pady=5)
+        # self.code_preview_check_vm.configure(yscrollcommand=self.scrollbar_check_vm.set)
 
         # Store the uploaded malware path
         self.check_vm_uploaded_malware = ""
@@ -609,7 +610,7 @@ class CodeEmbedderApp:
         func_label = ctk.CTkLabel(middle_frame, text="Select Function to Inject:")
         func_label.grid(row=0, column=0, sticky="e", padx=5, pady=5)
 
-        self.function_dropdown_custom = ctk.CTkOptionMenu(middle_frame, values=[])
+        self.function_dropdown_custom = ctk.CTkOptionMenu(middle_frame, values=["Menu"])
         self.function_dropdown_custom.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
         info_icon_func = ctk.CTkLabel(middle_frame, text="ℹ️", font=("Arial", 14), cursor="hand2")
@@ -717,8 +718,8 @@ class CodeEmbedderApp:
 
         self.scrollbar_custom = ctk.CTkScrollbar(self.custom_frame, orientation="vertical",
                                                 command=self.result_box_custom.yview)
-        self.scrollbar_custom.grid(row=7, column=1, sticky="ns", pady=10)
-        self.result_box_custom.configure(yscrollcommand=self.scrollbar_custom.set)
+        # self.scrollbar_custom.grid(row=7, column=1, sticky="ns", pady=10)
+        # self.result_box_custom.configure(yscrollcommand=self.scrollbar_custom.set)
 
         # Store uploaded file paths
         self.custom_uploaded_original = ""
@@ -787,7 +788,7 @@ class CodeEmbedderApp:
 
         # Code Preview Text Widget with Scrollbar
         self.dynamic_cipher_code_display_box = ctk.CTkTextbox(
-            self.dynamic_cipher_frame, wrap="word", height=15, state="disabled"
+            self.dynamic_cipher_frame, wrap="word", height=15
         )
         self.dynamic_cipher_code_display_box.grid(row=2, column=0, sticky="nsew", padx=(10, 0), pady=5)
 
@@ -814,7 +815,7 @@ class CodeEmbedderApp:
 
         # Result display area with Scrollbar
         self.dynamic_cipher_result_box = ctk.CTkTextbox(
-            self.dynamic_cipher_frame, wrap="word", height=15, state="disabled"
+            self.dynamic_cipher_frame, wrap="word", height=15
         )
         self.dynamic_cipher_result_box.grid(row=5, column=0, sticky="nsew", padx=(10, 0), pady=5)
 
@@ -1530,7 +1531,7 @@ class CodeEmbedderApp:
 
         # Display Box for code preview
         self.code_display_box_cython = ctk.CTkTextbox(
-            self.cython_frame, wrap="word", height=20, state="disabled"
+            self.cython_frame, wrap="word", height=20
         )
         self.code_display_box_cython.grid(row=2, column=0, sticky="nsew", padx=10, pady=5)
 
@@ -1568,7 +1569,7 @@ class CodeEmbedderApp:
 
         # Result display box for compilation output
         self.result_box_cython = ctk.CTkTextbox(
-            self.cython_frame, wrap="word", height=20, state="disabled"
+            self.cython_frame, wrap="word", height=20
         )
         self.result_box_cython.grid(row=6, column=0, sticky="nsew", padx=10, pady=5)
 
@@ -1634,6 +1635,9 @@ class CodeEmbedderApp:
 
     def create_qmorph_tab(self):
         """Create the QMorph Malware tab."""
+        # Initialize variables
+        self.malware_code_path_qmorph = ""
+
         self.qmorph_frame = self.tabview.tab("QMorph Malware")
         self.qmorph_frame.columnconfigure(0, weight=1)
         self.qmorph_frame.rowconfigure(2, weight=1)  # Added weight for row 2
@@ -1850,7 +1854,7 @@ class CodeEmbedderApp:
         """Populate the dropdown with the extracted function names for Custom mode."""
         if not function_names:
             self.selected_function_custom.set("")
-            self.function_dropdown_custom.configure(values=[])
+            self.function_dropdown_custom.configure(values=["menu"])
             return
 
         self.function_dropdown_custom.configure(values=function_names)
