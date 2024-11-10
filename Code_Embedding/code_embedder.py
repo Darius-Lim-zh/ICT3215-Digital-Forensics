@@ -2,6 +2,7 @@ import ast
 import astor
 import os
 
+
 def extract_functions_and_imports(filepath):
     """
     Helper function to extract imports and function definitions from an external Python file
@@ -97,7 +98,8 @@ def wrap_main_with_injected_functions(tree, func_names, func_wrapped="main", loc
                 left = node.test.left
                 comparators = node.test.comparators
                 if isinstance(left, ast.Name) and left.id == '__name__':
-                    if len(comparators) == 1 and isinstance(comparators[0], ast.Constant) and comparators[0].value == '__main__':
+                    if len(comparators) == 1 and isinstance(comparators[0], ast.Constant) and comparators[
+                        0].value == '__main__':
                         if loc_to_inject == "main":
                             # Find the main() call
                             for idx, stmt in enumerate(node.body):
@@ -244,7 +246,8 @@ def embed_code(embed_code_filenames=["mal_code.py"], src_code_filename='target_s
         # Inject function calls based on wrap and loc_to_inject
         if func_names:
             if wrap:
-                wrap_main_with_injected_functions(target_tree, func_names, func_wrapped="main", loc_to_inject=loc_to_inject)
+                wrap_main_with_injected_functions(target_tree, func_names, func_wrapped="main",
+                                                  loc_to_inject=loc_to_inject)
             else:
                 if loc_to_inject == "main":
                     append_injected_functions_before_main(target_tree, func_names)
