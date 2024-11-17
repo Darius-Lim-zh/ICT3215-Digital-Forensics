@@ -1,3 +1,5 @@
+import sys
+
 import customtkinter as ctk
 from tkinter import filedialog, messagebox, StringVar, BooleanVar, IntVar
 import os
@@ -13,6 +15,9 @@ from Anti_Decompilation.PyCCorruptor import PyCCorruptor as pyc
 from Anti_Decompilation.CythonCompile.compile import compile_with_cython
 import Fragmentation_Stego.encode as stego
 
+
+# To compile into exe
+# pyinstaller --onefile --paths=venv/Lib/site-packages --hidden-import customtkinter --hidden-import qiskit --collect-all customtkinter --collect-all qiskit --add-data "assets/ObfusQrypt.ico:assets" --add-data "venv/Lib/site-packages/qiskit_aer/VERSION.txt:qiskit_aer" --noconsole --icon=assets/ObfusQrypt.ico ObfusQrypt.py
 
 class ToolTip:
     """Tooltip class to display tooltips for CustomTkinter widgets with boundary checks and theme awareness."""
@@ -35,7 +40,7 @@ class ToolTip:
 
         # Define colors based on themes
         self.light_bg = "#FFFFE0"  # Light Yellow
-        self.dark_bg = "#333333"   # Dark Gray
+        self.dark_bg = "#333333"  # Dark Gray
         self.text_color_light = "black"
         self.text_color_dark = "white"
 
@@ -81,8 +86,8 @@ class ToolTip:
         label = ctk.CTkLabel(
             self.tooltip_window,
             text=self.text,
-            fg_color=bg_color,        # Background color based on theme
-            text_color=text_color,    # Text color based on theme
+            fg_color=bg_color,  # Background color based on theme
+            text_color=text_color,  # Text color based on theme
             wraplength=self.wraplength,
             corner_radius=4,
             padx=5,
@@ -136,6 +141,7 @@ def extract_functions_and_imports(filepath):
     """Extract function definitions from the uploaded code file."""
     return ce.extract_functions_and_imports(filepath)
 
+
 class SplashScreen(ctk.CTkToplevel):
     """Splash Screen Window."""
 
@@ -163,6 +169,7 @@ class SplashScreen(ctk.CTkToplevel):
 
         # Load and display the logo/image
         try:
+            image_path = resource_path(image_path)  # Get the correct path
             image = Image.open(image_path)
             image = image.resize((200, 200), Image.LANCZOS)
             self.photo = ImageTk.PhotoImage(image)
@@ -179,6 +186,15 @@ class SplashScreen(ctk.CTkToplevel):
         self.destroy()
         self.parent.deiconify()  # Show the main window
 
+
+def resource_path(relative_path):
+    """Get the absolute path to a resource. Works for dev and PyInstaller."""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller stores resources in the _MEIPASS folder during runtime
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+
 class CodeEmbedderApp:
     def __init__(self, main_root):
         self.root = main_root
@@ -186,8 +202,9 @@ class CodeEmbedderApp:
         ctk.set_appearance_mode("Dark")  # Modes: "System" (default), "Dark", "Light"
         ctk.set_default_color_theme("blue")  # Themes: "blue" (default), "green", "dark-blue"
 
-        self.root.iconbitmap("assets/ObfusQrypt.ico")
-
+        # self.root.iconbitmap("assets/ObfusQrypt.ico")
+        icon_path = resource_path("assets/ObfusQrypt.ico")
+        self.root.iconbitmap(icon_path)
 
         # Get screen height and set the window max height to the screen height
         screen_height = self.root.winfo_screenheight()
@@ -301,8 +318,6 @@ class CodeEmbedderApp:
 
         self.scrollbar_self_destruct = ctk.CTkScrollbar(self.self_destruct_frame, orientation="vertical",
                                                         command=self.code_preview_self_destruct.yview)
-        self.scrollbar_self_destruct.grid(row=6, column=1, sticky="ns", pady=5)
-        self.code_preview_self_destruct.configure(yscrollcommand=self.scrollbar_self_destruct.set)
 
         # Store the uploaded malware path
         self.self_destruct_uploaded_malware = ""
@@ -318,7 +333,10 @@ class CodeEmbedderApp:
             self.upload_status_self_destruct.configure(text=f"Uploaded: {os.path.basename(filepath)}")
             # Clear previous success message and code preview
             self.success_label_self_destruct.configure(text="")
+            with open(filepath, 'r') as f:
+                code = f.read()
             self.code_preview_self_destruct.delete("0.0", "end")
+            self.code_preview_self_destruct.insert("0.0", code)
 
     def submit_self_destruct(self):
         """Embed the self-destruct code into the original malware."""
@@ -435,8 +453,6 @@ class CodeEmbedderApp:
         self.scrollbar_check_vm = ctk.CTkScrollbar(
             self.check_vm_frame, orientation="vertical", command=self.code_preview_check_vm.yview
         )
-        # self.scrollbar_check_vm.grid(row=7, column=1, sticky="ns", pady=5)
-        # self.code_preview_check_vm.configure(yscrollcommand=self.scrollbar_check_vm.set)
 
         # Store the uploaded malware path
         self.check_vm_uploaded_malware = ""
@@ -474,7 +490,6 @@ class CodeEmbedderApp:
                 cb.pack(anchor="w")
                 cb_tooltip = ToolTip(cb, description)
                 self.vm_check_vars[func_name] = var
-
 
     def submit_check_vm(self):
         """Embed the selected VM checks into the original malware."""
@@ -717,7 +732,7 @@ class CodeEmbedderApp:
         self.result_box_custom.grid(row=7, column=0, sticky="nsew", padx=10, pady=10)
 
         self.scrollbar_custom = ctk.CTkScrollbar(self.custom_frame, orientation="vertical",
-                                                command=self.result_box_custom.yview)
+                                                 command=self.result_box_custom.yview)
         # self.scrollbar_custom.grid(row=7, column=1, sticky="ns", pady=10)
         # self.result_box_custom.configure(yscrollcommand=self.scrollbar_custom.set)
 
@@ -805,7 +820,6 @@ class CodeEmbedderApp:
             command=self.submit_dynamic_cipher, width=300
         )
         self.dynamic_cipher_submit_btn.grid(row=3, column=0, columnspan=2, pady=10, sticky="ew", padx=10)
-
 
         # Section 2: Result Preview Title
         result_preview_title = ctk.CTkLabel(
@@ -977,14 +991,6 @@ class CodeEmbedderApp:
         )
         self.pyc_corrupt_scrollbar.grid(row=5, column=1, sticky="ns", pady=5)
         self.pyc_corrupt_result_box.configure(yscrollcommand=self.pyc_corrupt_scrollbar.set)
-
-        # Optional: Add Scrollbar to Code Display Box if needed
-        # Uncomment the following lines if you want a scrollbar for the code display box
-        # self.pyc_corrupt_code_scrollbar = ctk.CTkScrollbar(
-        #     self.pyc_corrupt_frame, orientation="vertical", command=self.pyc_corrupt_code_display_box.yview
-        # )
-        # self.pyc_corrupt_code_scrollbar.grid(row=2, column=2, sticky="ns", pady=5)
-        # self.pyc_corrupt_code_display_box.configure(yscrollcommand=self.pyc_corrupt_code_scrollbar.set)
 
         # Ensure the result box expands properly
         self.pyc_corrupt_frame.rowconfigure(5, weight=1)
@@ -1235,11 +1241,11 @@ class CodeEmbedderApp:
         malware_label.grid(row=0, column=0, sticky="w")
 
         self.malware_upload_btn_pdf = ctk.CTkButton(top_frame_pdf, text="Upload Malware File",
-                                                   command=self.load_malware_file_pdf)
+                                                    command=self.load_malware_file_pdf)
         self.malware_upload_btn_pdf.grid(row=0, column=1, sticky="ew", padx=5)
 
         self.show_malware_btn_pdf = ctk.CTkButton(top_frame_pdf, text="Show Malware Code",
-                                                 command=self.show_malware_code_pdf)
+                                                  command=self.show_malware_code_pdf)
         self.show_malware_btn_pdf.grid(row=0, column=2, sticky="ew", padx=5)
 
         # Tooltip for Malware File upload
@@ -1268,11 +1274,11 @@ class CodeEmbedderApp:
         public_key_label.grid(row=0, column=0, sticky="w")
 
         self.upload_public_key_btn_pdf = ctk.CTkButton(pdf_embed_subtab, text="Upload Public Key",
-                                                     command=self.load_public_key_pdf)
+                                                       command=self.load_public_key_pdf)
         self.upload_public_key_btn_pdf.grid(row=0, column=1, sticky="ew", padx=5, pady=1)
 
         self.show_public_key_btn_pdf = ctk.CTkButton(pdf_embed_subtab, text="Show Public Key",
-                                                   command=self.show_public_key_pdf)
+                                                     command=self.show_public_key_pdf)
         self.show_public_key_btn_pdf.grid(row=0, column=2, sticky="ew", padx=5)
 
         # Tooltip for Public Key
@@ -1286,7 +1292,7 @@ class CodeEmbedderApp:
         folder_label_pdf.grid(row=1, column=0, sticky="w")
 
         self.folder_select_btn_pdf = ctk.CTkButton(pdf_embed_subtab, text="Select Folder",
-                                                command=self.select_pdf_folder_pdf)
+                                                   command=self.select_pdf_folder_pdf)
         self.folder_select_btn_pdf.grid(row=1, column=1, sticky="ew", padx=5)
 
         # Tooltip for PDF Input Folder selection
@@ -1300,7 +1306,8 @@ class CodeEmbedderApp:
         self.pdf_checkboxes_frame_pdf.grid(row=2, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
 
         # Submit button and output result box
-        self.submit_pdf_embed_btn = ctk.CTkButton(pdf_embed_subtab, text="Submit", command=self.submit_pdf_embed, width=200)
+        self.submit_pdf_embed_btn = ctk.CTkButton(pdf_embed_subtab, text="Submit", command=self.submit_pdf_embed,
+                                                  width=200)
         self.submit_pdf_embed_btn.grid(row=3, column=0, columnspan=4, sticky="ew", pady=10)
 
         # Result Text box in Embedding Options subtab
@@ -1322,7 +1329,7 @@ class CodeEmbedderApp:
         image_folder_label.grid(row=0, column=0, sticky="w")
 
         self.folder_select_btn_image = ctk.CTkButton(image_embed_subtab, text="Select Folder",
-                                                command=self.select_input_image_folder)
+                                                     command=self.select_input_image_folder)
         self.folder_select_btn_image.grid(row=0, column=1, sticky="ew", padx=5)
 
         # Image Checkboxes frame for file selection
@@ -1330,7 +1337,8 @@ class CodeEmbedderApp:
         self.image_checkboxes_frame.grid(row=1, column=0, columnspan=4, sticky="nsew", padx=10, pady=10)
 
         # Submit button and output result box
-        self.submit_image_embed_btn = ctk.CTkButton(image_embed_subtab, text="Submit", command=self.submit_image_embed, width=200)
+        self.submit_image_embed_btn = ctk.CTkButton(image_embed_subtab, text="Submit", command=self.submit_image_embed,
+                                                    width=200)
         self.submit_image_embed_btn.grid(row=2, column=0, columnspan=4, sticky="ew", pady=10)
 
         # Result Text box in Image Embedding Options subtab
@@ -1860,9 +1868,6 @@ class CodeEmbedderApp:
         self.function_dropdown_custom.configure(values=function_names)
         self.selected_function_custom.set(function_names[0])  # Set default selection
 
-    # The remaining methods for other tabs (PDF Embedder, etc.) should be similarly translated.
-    # Due to the extensive length of the original code, they are omitted here for brevity.
-    # However, the approach demonstrated above should be followed for all widgets and layouts.
 
 if __name__ == "__main__":
     app = ctk.CTk()
