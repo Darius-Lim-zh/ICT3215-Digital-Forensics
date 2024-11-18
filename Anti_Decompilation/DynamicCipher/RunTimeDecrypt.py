@@ -81,32 +81,3 @@ def runtime_decrypt(input_file):
     except Exception as e:
         print(f"Error in runtime_decrypt: {e}")
         return None
-
-
-# def main():
-#     # Input Python file to be encrypted
-#     input_file = 'test.py'  # Replace with your actual script path
-#     # output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
-#
-#     runtime_decrypt(input_file)
-
-# def main():
-#     # Input Python file to be encrypted
-#     input_file = 'test.py'  # Replace with your actual script path
-#     # output_file = 'runtimedecrypt_script.py'  # The final Python script with embedded encrypted data
-#
-#     runtime_decrypt(input_file)
-
-# # Generate a 32-byte key (AES-256) or provide your own key
-# key = os.urandom(32)
-#
-# # Encrypt the input script
-# iv, encrypted_data = encrypt_script(input_file, key)
-#
-# # Generate the decryption script with embedded encrypted data
-# generate_decryption_script(iv, encrypted_data, key, output_file)
-#
-# print(f"Decryption script generated and saved to {output_file}")
-
-# if __name__ == '__main__':
-#     main()
