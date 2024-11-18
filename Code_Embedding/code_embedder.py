@@ -49,7 +49,7 @@ def wrap_main_with_injected_functions(tree, func_names, func_wrapped="main", loc
     """
     This function wraps the main() function call within injected function checks.
     Depending on loc_to_inject, it injects the condition before or after main().
-    If any injected function returns False, main() is not called.
+    If any injected function returns True, the logic flags it.
 
     :param tree: AST of the target script.
     :param func_names: List of function names to inject.
@@ -60,29 +60,37 @@ def wrap_main_with_injected_functions(tree, func_names, func_wrapped="main", loc
     if len(func_names) == 0:
         return  # No functions to inject
 
-    # Build the comparison: func1() and func2() and ...
-    comparison = ast.BoolOp(op=ast.And(), values=[
+    # Build the comparison: func1() or func2() or ...
+    comparison = ast.BoolOp(op=ast.Or(), values=[
         ast.Call(func=ast.Name(id=func, ctx=ast.Load()), args=[], keywords=[])
         for func in func_names
     ])
 
     if loc_to_inject == "main":
-        # Construct the if statement: if not (comparison):
+        # Construct the if statement: if comparison:
         new_if_stmt = ast.If(
-            test=ast.UnaryOp(op=ast.Not(), operand=comparison),
+            test=comparison,
             body=[
-                ast.Expr(value=ast.Call(func=ast.Name(id=func_wrapped, ctx=ast.Load()), args=[], keywords=[]))
+                ast.Expr(value=ast.Call(
+                    func=ast.Name(id="print", ctx=ast.Load()),
+                    args=[ast.Constant(value="Detection triggered!")],
+                    keywords=[]
+                ))
             ],
-            orelse=[]
+            orelse=[
+                ast.Expr(value=ast.Call(func=ast.Name(id=func_wrapped, ctx=ast.Load()), args=[], keywords=[]))
+            ]
         )
     elif loc_to_inject == "end":
-        # Construct the if statement: if not (comparison):
-        #     pass  # Or any other action if needed
+        # Construct the if statement: if comparison:
         new_if_stmt = ast.If(
-            test=ast.UnaryOp(op=ast.Not(), operand=comparison),
+            test=comparison,
             body=[
-                # Replace 'pass' with any other function call if needed
-                ast.Pass()
+                ast.Expr(value=ast.Call(
+                    func=ast.Name(id="print", ctx=ast.Load()),
+                    args=[ast.Constant(value="Detection triggered!")],
+                    keywords=[]
+                ))
             ],
             orelse=[]
         )
@@ -98,8 +106,7 @@ def wrap_main_with_injected_functions(tree, func_names, func_wrapped="main", loc
                 left = node.test.left
                 comparators = node.test.comparators
                 if isinstance(left, ast.Name) and left.id == '__name__':
-                    if len(comparators) == 1 and isinstance(comparators[0], ast.Constant) and comparators[
-                        0].value == '__main__':
+                    if len(comparators) == 1 and isinstance(comparators[0], ast.Constant) and comparators[0].value == '__main__':
                         if loc_to_inject == "main":
                             # Find the main() call
                             for idx, stmt in enumerate(node.body):
@@ -121,6 +128,7 @@ def wrap_main_with_injected_functions(tree, func_names, func_wrapped="main", loc
                             # If main() not found, append the conditional at the end
                             node.body.append(new_if_stmt)
     return 0
+
 
 
 def append_injected_functions_before_main(tree, func_names):
