@@ -64,7 +64,7 @@ def embed_python_in_multiple_pdfs(python_file_path, pdf_paths, public_key_path):
         content_parts = split_content(encrypted_content.encode(), len(pdf_paths))
 
         # Create output folder if it doesn’t exist
-        output_folder = 'Embedded Files'
+        output_folder = 'Output\\embedded_pdf_files'
         os.makedirs(output_folder, exist_ok=True)
 
         # Embed each part in a PDF
