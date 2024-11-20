@@ -12,6 +12,8 @@ from Excel.embed_excel import embed_python_script_and_vba
 from PDF import embed_pdf_rsa as pdf
 from Anti_Decompilation.DynamicCipher import RunTimeDecrypt as dyc
 from Anti_Decompilation.PyCCorruptor import PyCCorruptor as pyc
+from Anti_Decompilation.CythonCompile import Cython_compiler as cc
+
 from Anti_Decompilation.CythonCompile.compile import compile_with_cython
 import Fragmentation_Stego.encode as stego
 
@@ -1543,25 +1545,12 @@ class CodeEmbedderApp:
         )
         self.code_display_box_cython.grid(row=2, column=0, sticky="nsew", padx=10, pady=5)
 
-        # Middle Frame for output file name and options
-        middle_frame = ctk.CTkFrame(self.cython_frame)
-        middle_frame.grid(row=3, column=0, sticky="ew", padx=10, pady=5)
-        middle_frame.columnconfigure(1, weight=1)
-
-        # Output File Name Entry
-        output_label = ctk.CTkLabel(middle_frame, text="Output File Name (.pyc):")
-        output_label.grid(row=0, column=0, sticky="e", padx=5, pady=5)
-
-        self.file_name_entry_cython = ctk.CTkEntry(
-            middle_frame, textvariable=self.cython_output_file_name
-        )
-        self.file_name_entry_cython.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
         # Submit Button
         self.cython_submit_btn = ctk.CTkButton(
             self.cython_frame, text="Submit", command=self.submit_cython, width=200
         )
-        self.cython_submit_btn.grid(row=4, column=0, pady=10, sticky="ew", padx=10)
+        self.cython_submit_btn.grid(row=3, column=0, pady=10, sticky="ew", padx=10)
 
         # Attach a tooltip to the submit button
         ToolTip(
@@ -1573,7 +1562,7 @@ class CodeEmbedderApp:
         compilation_results_header = ctk.CTkLabel(
             self.cython_frame, text="Compilation Results", font=("Arial", 12, "bold")
         )
-        compilation_results_header.grid(row=5, column=0, sticky="w", padx=10, pady=(10, 0))
+        compilation_results_header.grid(row=4, column=0, sticky="w", padx=10, pady=(10, 0))
 
         # Result display box for compilation output
         self.result_box_cython = ctk.CTkTextbox(
@@ -1596,50 +1585,39 @@ class CodeEmbedderApp:
     def submit_cython(self):
         """Submit the file for compilation with CythonCompile."""
         input_file = self.cython_code_path
-        output_file = self.cython_output_file_name.get().strip()
 
         if not input_file:
             messagebox.showerror("Error", "Please upload a Python file to compile.")
             return
 
-        # Check if output file has .pyc extension, if not, add it
-        if not output_file.endswith(".pyc"):
-            output_file += ".pyc"
-
-        # If no output file name specified, generate default unique name
-        if not output_file or output_file == ".pyc":
-            base_name = "CythonCompiled"
-            counter = 0
-            while os.path.exists(f"Output/{base_name}{counter}.pyc"):
-                counter += 1
-            output_file = f"{base_name}{counter}.pyc"
-
         # Create output directory if it doesn't exist
         os.makedirs("Output", exist_ok=True)
-        output_path = os.path.join("Output", output_file)
 
         # Run the cython compiler
-        success, location = self.cython_compiler(input_file, output_path)
+        success, location = self.cython_compiler(input_file)
 
         # Display results
         self.result_box_cython.delete("0.0", "end")
         if success:
-            self.result_box_cython.insert("0.0", f"Compilation Successful!\nOutput saved to: {output_path}")
+            self.result_box_cython.insert("0.0", f"Compilation Successful!\nOutput saved to: {location}")
         else:
             self.result_box_cython.insert("0.0", "An error occurred during compilation.")
 
-    def cython_compiler(self, input_file, output_file):
-        """Compile a Python file using CythonCompile to produce a .pyc output."""
-        try:
-            # Actual CythonCompile compilation call, replace with your import and actual call from compile.py
-            location = compile_with_cython(input_file, output_file)  # Replace with actual function call
-            if location is not None:
-                return True, location
-            else:
-                return False, None
-        except Exception as e:
-            print(f"Compilation Error: {e}")
-            return False, None
+    def cython_compiler(input_file):
+        return cc.cython_compilation(input_file)
+
+    # def cython_compiler(self, input_file, output_file):
+    #     """Compile a Python file using CythonCompile to produce a .pyc output."""
+    #     try:
+    #         # Actual CythonCompile compilation call, replace with your import and actual call from compile.py
+    #         location = compile_with_cython(input_file, output_file)  # Replace with actual function call
+    #         if location is not None:
+    #             return True, location
+    #         else:
+    #             return False, None
+    #     except Exception as e:
+    #         print(f"Compilation Error: {e}")
+    #         return False, None
 
     def create_qmorph_tab(self):
         """Create the QMorph Malware tab."""

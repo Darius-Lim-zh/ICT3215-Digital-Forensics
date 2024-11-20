@@ -177,6 +177,8 @@ def cython_compilation(target_script):
 
     return target_path
 
+
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python Cython_compiler.py <path_to_python_script>")
