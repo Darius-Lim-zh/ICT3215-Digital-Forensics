@@ -6,9 +6,6 @@ import sys
 import os
 import shutil
 import subprocess
-from setuptools import setup
-from Cython.Build import cythonize
-from setuptools.extension import Extension
 import PyInstaller.__main__
 import glob
 import re
@@ -87,10 +84,14 @@ setup(
         print("Compiled module not found.")
         return False
 
+    # Remove the generated .c file
     try:
-        os.remove(f"{base_name}.c")
+        c_file_path = os.path.splitext(target_script)[0] + ".c"
+        if os.path.exists(c_file_path):
+            os.remove(c_file_path)
+            print(f"Removed generated C file: {c_file_path}")
     except FileNotFoundError:
-        pass
+        print("Generated C file not found, skipping removal.")
 
     return compiled_name
 

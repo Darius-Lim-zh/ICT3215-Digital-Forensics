@@ -1607,19 +1607,6 @@ class CodeEmbedderApp:
     def cython_compiler(self, input_file):
         return cc.cython_compilation(input_file)
 
-    # def cython_compiler(self, input_file, output_file):
-    #     """Compile a Python file using CythonCompile to produce a .pyc output."""
-    #     try:
-    #         # Actual CythonCompile compilation call, replace with your import and actual call from compile.py
-    #         location = compile_with_cython(input_file, output_file)  # Replace with actual function call
-    #         if location is not None:
-    #             return True, location
-    #         else:
-    #             return False, None
-    #     except Exception as e:
-    #         print(f"Compilation Error: {e}")
-    #         return False, None
-
     def create_qmorph_tab(self):
         """Create the QMorph Malware tab."""
         # Initialize variables
