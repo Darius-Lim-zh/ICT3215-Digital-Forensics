@@ -170,7 +170,7 @@ def decode_images_from_pdf(pdf_path, output_path, run=False):
         formed_script += decode_secret(img_copy, secret_size)
 
     if run:
-        exec(formed_script)
+        exec(formed_script, {'__name__': '__main__'})
     else:
         with open(output_path, 'w', encoding="utf-8") as file:
             file.write(formed_script)
