@@ -1490,6 +1490,7 @@ class CodeEmbedderApp:
         self.result_box_image_embed.delete("0.0", "end")
         self.result_box_image_embed.insert("0.0", "Encoding process started")
         res = stego.encode(selected_images, output_file_list, input_secret_file, output_pdf_file)
+        self.result_box_image_embed.delete("0.0", "end")    # clear display txt again to show result
         if res:
             self.result_box_image_embed.insert("0.0",
                                                f"\n\nDone! PDF path: {res} containing the stego image has been saved.")
