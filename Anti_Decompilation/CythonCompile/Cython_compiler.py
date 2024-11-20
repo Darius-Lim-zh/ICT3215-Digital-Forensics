@@ -158,6 +158,8 @@ if __name__ == '__main__':
     except FileNotFoundError:
         pass
 
+    return target_path
+
 # To be used in the UI
 def cython_compilation(target_script):
     if not os.path.isfile(target_script):
@@ -171,7 +173,9 @@ def cython_compilation(target_script):
     compiled_module_name = f"{base_name}_cython_compiled"
 
     # Created the executable that has been compiled with
-    create_executable(compiled_module_name)
+    target_path = create_executable(compiled_module_name)
+
+    return target_path
 
 def main():
     if len(sys.argv) != 2:

@@ -6,34 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a3f68942-cb40-4c6d-9a55-9ff0860a729f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/DynamicCipher/RunTimeDecrypt.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/DynamicCipher/RunTimeDecrypt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code_Embedding/code_embedder.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code_Embedding/code_embedder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ObfusQrypt.py" beforeDir="false" afterPath="$PROJECT_DIR$/ObfusQrypt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/AnnoyingEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/CheckForVM_SelfDEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/CheckVM_SelfDEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/DSampleEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/DynamicOneTimeUse.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/EvasiveSelfDEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/New.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/decode.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/manga.jpeg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/original.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/out.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/out.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/PDF_with_images/test.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/QmorphObf1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/QmorphObf2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/QmorphObf3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/QmorphObf4.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/QmorphObf5.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/SelfDEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/capescalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/dynamic_loader.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/new_selfD.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/runtimedecrypt_SelfDEscalator.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/runtimedecrypt_test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Output/test_cython_compiled.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Anti_Decompilation/CythonCompile/Cython_compiler.py" beforeDir="false" afterPath="$PROJECT_DIR$/Anti_Decompilation/CythonCompile/Cython_compiler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,24 +37,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.DecompilationCheck.executor&quot;: &quot;Run&quot;,
-    &quot;Python.RunTimeDecrypt.executor&quot;: &quot;Run&quot;,
-    &quot;Python.compiler.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runtimedecrypt_script.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.wrapper_script.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Sandbox/ICT3215-Digital-Forensics&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.DecompilationCheck.executor": "Run",
+    "Python.ObfusQrypt.executor": "Run",
+    "Python.RunTimeDecrypt.executor": "Run",
+    "Python.compiler.executor": "Run",
+    "Python.runtimedecrypt_script.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.wrapper_script.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/Sandbox/ICT3215-Digital-Forensics",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Sandbox\ICT3215-Digital-Forensics" />
