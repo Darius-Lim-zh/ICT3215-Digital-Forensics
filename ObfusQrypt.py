@@ -1603,7 +1603,7 @@ class CodeEmbedderApp:
         else:
             self.result_box_cython.insert("0.0", "An error occurred during compilation.")
 
-    def cython_compiler(input_file):
+    def cython_compiler(self, input_file):
         return cc.cython_compilation(input_file)
 
     # def cython_compiler(self, input_file, output_file):

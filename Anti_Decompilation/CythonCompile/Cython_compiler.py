@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
     # Move the executable to current directory
     dist_path = os.path.join('dist', executable_name)
-    target_path = os.path.join('..', '..', 'Output', executable_name)
+    target_path = os.path.join('Output', executable_name)
 
     print(dist_path)
     if os.path.exists(dist_path):
@@ -162,20 +162,24 @@ if __name__ == '__main__':
 
 # To be used in the UI
 def cython_compilation(target_script):
-    if not os.path.isfile(target_script):
-        print(f"Error: {target_script} does not exist.")
-        # sys.exit(1)
-        return False
+    try:
+        if not os.path.isfile(target_script):
+            print(f"Error: {target_script} does not exist.")
+            # sys.exit(1)
+            return False
 
-    compile_with_cython(target_script)
+        compile_with_cython(target_script)
 
-    base_name = os.path.splitext(os.path.basename(target_script))[0]
-    compiled_module_name = f"{base_name}_cython_compiled"
+        base_name = os.path.splitext(os.path.basename(target_script))[0]
+        compiled_module_name = f"{base_name}_cython_compiled"
 
-    # Created the executable that has been compiled with
-    target_path = create_executable(compiled_module_name)
+        # Created the executable that has been compiled with
+        target_path = create_executable(compiled_module_name)
+        return True, target_path
+    except Exception as e:
+        return False, e
 
-    return target_path
+
 
 
 
